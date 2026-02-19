@@ -1,0 +1,19 @@
+{
+  "name": "zwerffiets",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "bun@1.3.9",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "bun run --cwd apps/web dev",
+    "dev:lan": "bun run --cwd apps/web dev:lan",
+    "api:dev": "cd apps/api && go run .",
+    "api:test": "cd apps/api && go test ./...",
+    "build": "bun run --cwd apps/web build",
+    "preview": "bun run --cwd apps/web preview",
+    "check": "bun run --cwd apps/web check",
+    "test": "bun run --cwd apps/web test"
+  }
+}

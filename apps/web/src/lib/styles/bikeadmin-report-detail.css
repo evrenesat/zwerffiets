@@ -1,0 +1,122 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #dbe6ee;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.2rem 1rem;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #b7cad8;
+  border-radius: 8px;
+  padding: 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  background: #0b4a6f;
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+}
+
+.photo-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  margin-bottom: 1rem;
+}
+
+.photo-thumb-button {
+  padding: 0;
+  border: 1px solid #d5e2eb;
+  background: #ffffff;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.photo-large-thumb {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.photo-empty {
+  color: #5a7082;
+}
+
+.photo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 20, 28, 0.78);
+  display: grid;
+  place-items: center;
+  z-index: 30;
+  padding: 1rem;
+}
+
+.photo-modal {
+  position: relative;
+  width: min(100%, 1100px);
+  max-height: 90vh;
+  border-radius: 12px;
+  background: #0b1924;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  padding: 2.5rem;
+}
+
+.photo-modal-image {
+  max-width: 100%;
+  max-height: calc(90vh - 5rem);
+  object-fit: contain;
+}
+
+.photo-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.photo-modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 0;
+  padding: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.photo-modal-nav-left {
+  left: 0.8rem;
+}
+
+.photo-modal-nav-right {
+  right: 0.8rem;
+}

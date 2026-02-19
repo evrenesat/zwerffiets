@@ -1,0 +1,116 @@
+.login-wrap {
+  max-width: 28rem;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  font-size: 1.75rem;
+  font-family: Georgia, 'Palatino Linotype', serif;
+  font-weight: bold;
+  color: var(--fg);
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* --- Fields --- */
+.field {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--fg);
+}
+
+input[type='email'] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font: inherit;
+  font-size: 1rem;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.5;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+input[type='email']::placeholder {
+  color: var(--fg-muted);
+}
+
+input[type='email']:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+  background: var(--bg-card);
+}
+
+/* --- Submit button --- */
+.submit {
+  width: 100%;
+  background: var(--primary);
+  color: var(--primary-fg);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.8rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 120ms ease, transform 60ms ease;
+  margin-top: 0.5rem;
+}
+
+.submit:hover:not(:disabled) {
+  background: #3d6649;
+}
+
+.submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- Messages --- */
+.alert {
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.alert-success {
+  background: rgba(74, 124, 89, 0.1);
+  border: 1px solid rgba(74, 124, 89, 0.3);
+  color: var(--fg);
+}
+
+.alert-error {
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  color: var(--destructive);
+}
+
+.alert strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: inherit;
+}

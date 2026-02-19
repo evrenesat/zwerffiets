@@ -1,0 +1,19 @@
+{{define "content"}}
+<section class="card narrow">
+  <h1>{{index .Text "login_title"}}</h1>
+  <p>{{index .Text "login_hint"}}</p>
+
+  <form method="post" action="/bikeadmin/login" class="stack-form">
+    <input type="hidden" name="next" value="{{.Next}}" />
+    <input type="hidden" name="language" value="{{.Lang}}" />
+
+    <label for="email">{{index .Text "login_email"}}</label>
+    <input id="email" name="email" type="email" required value="{{.Email}}" />
+
+    <label for="password">{{index .Text "login_password"}}</label>
+    <input id="password" name="password" type="password" required />
+
+    <button type="submit">{{index .Text "login_button"}}</button>
+  </form>
+</section>
+{{end}}

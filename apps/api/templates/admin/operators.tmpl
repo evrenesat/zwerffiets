@@ -1,0 +1,69 @@
+{{define "content"}}
+<section class="card">
+  <div class="header-split">
+    <h1>{{index .Text "page_title_operators"}}</h1>
+    <a href="/bikeadmin/operators/new" class="button">{{index .Text "operator_create_button"}}</a>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{{index .Text "operator_email"}}</th>
+          <th>{{index .Text "operator_role"}}</th>
+          <th>{{index .Text "operator_municipality"}}</th>
+          <th>{{index .Text "operator_status"}}</th>
+          <th>{{index .Text "operator_receives_reports"}}</th>
+          <th>{{index .Text "operator_unsubscribe_requested"}}</th>
+          <th>{{index .Text "col_actions"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Operators}}
+        <tr>
+          <td>{{.Email}}</td>
+          <td>{{index $.Text (printf "role_%s" .Role)}}</td>
+          <td>{{if .Municipality}}{{.Municipality}}{{else}}-{{end}}</td>
+          <td>
+            {{if .IsActive}}
+            <span class="signal-badge signal-strong">{{index $.Text "status_active"}}</span>
+            {{else}}
+            <span class="signal-badge signal-none">{{index $.Text "status_inactive"}}</span>
+            {{end}}
+          </td>
+          <td>
+            <div class="header-split" style="gap: 8px;">
+              {{if .ReceivesReports}}
+                <span class="signal-badge signal-strong">{{index $.Text "status_yes"}}</span>
+              {{else}}
+                <span class="signal-badge signal-none">{{index $.Text "status_no"}}</span>
+              {{end}}
+              <form method="post" action="/bikeadmin/operators/{{.ID}}/toggle-reports" class="inline-form">
+                <button type="submit" class="link-button">
+                  {{if .ReceivesReports}}{{index $.Text "action_disable_reports"}}{{else}}{{index $.Text "action_enable_reports"}}{{end}}
+                </button>
+              </form>
+            </div>
+          </td>
+          <td>
+            {{if .UnsubscribeRequested}}
+            <span class="signal-badge signal-weak">{{index $.Text "badge_unsubscribe_requested"}}</span>
+            {{else}}
+            -
+            {{end}}
+          </td>
+          <td>
+            <a href="/bikeadmin/operators/{{.ID}}/edit" class="link-button">{{index $.Text "report_edit_button"}}</a>
+            <form method="post" action="/bikeadmin/operators/{{.ID}}/toggle" class="inline-form">
+              <button type="submit" class="link-button">
+                {{if .IsActive}}{{index $.Text "action_deactivate"}}{{else}}{{index $.Text "action_activate"}}{{end}}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}

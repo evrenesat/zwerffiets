@@ -1,0 +1,30 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #dbe6ee;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.generate {
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  border-bottom: 1px solid #eef2f6;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.error {
+  color: #a0232d;
+}

@@ -1,0 +1,45 @@
+{{define "content"}}
+<section class="card">
+  <p><a href="{{.BackURL}}">{{index .Text "report_back"}}</a></p>
+  <h1>{{index .Text "page_title_report_edit"}} {{.ReportID}}</h1>
+
+  <form method="post" action="/bikeadmin/reports/{{.ReportID}}/edit" class="stack-form">
+    <input type="hidden" name="next" value="{{.BackURL}}" />
+
+    <label>
+      {{index .Text "report_municipality"}}
+      <select name="municipality">
+        <option value="">—</option>
+        {{range .Municipalities}}
+        <option value="{{.}}" {{if eq . $.Municipality}}selected{{end}}>{{.}}</option>
+        {{end}}
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "report_address"}}
+      <input type="text" name="address" value="{{.Address}}" />
+    </label>
+
+    <label>
+      {{index .Text "report_postcode"}}
+      <input type="text" name="postcode" value="{{.Postcode}}" />
+    </label>
+
+    <label>
+      {{index .Text "report_lat"}}
+      <input type="number" name="lat" value="{{.Lat}}" step="0.000001" required />
+    </label>
+
+    <label>
+      {{index .Text "report_lng"}}
+      <input type="number" name="lng" value="{{.Lng}}" step="0.000001" required />
+    </label>
+
+    <div class="form-actions">
+      <button type="submit">{{index .Text "report_edit_save"}}</button>
+      <a href="{{.BackURL}}" class="button button-secondary">{{index .Text "ui_cancel"}}</a>
+    </div>
+  </form>
+</section>
+{{end}}

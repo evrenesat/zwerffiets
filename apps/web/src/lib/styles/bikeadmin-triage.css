@@ -1,0 +1,108 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #dbe6ee;
+  border-radius: 12px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.filters {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  margin-bottom: 1rem;
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #3c5568;
+}
+
+select {
+  border: 1px solid #cbd7e2;
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: #ffffff;
+}
+
+.filter-button {
+  align-self: end;
+  height: fit-content;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+th,
+td {
+  text-align: left;
+  border-bottom: 1px solid #eef2f6;
+  padding: 0.6rem;
+  vertical-align: top;
+}
+
+th {
+  font-size: 0.85rem;
+  color: #3c5568;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.report-thumbnail {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #d5e2eb;
+  background: #f1f6fa;
+}
+
+.photo-missing {
+  color: #5a7082;
+  font-size: 0.78rem;
+}
+
+button {
+  border: 1px solid #cbd7e2;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.signal-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-none {
+  background: #edf1f5;
+  color: #4a5d6f;
+}
+
+.badge-weak_same_reporter {
+  background: #ffefc7;
+  color: #825500;
+}
+
+.badge-strong_distinct_reporters {
+  background: #ffd9cd;
+  color: #8f2200;
+}
+
+.empty {
+  margin-top: 0.9rem;
+  color: #395166;
+}

@@ -1,0 +1,36 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #dbe6ee;
+  border-radius: 12px;
+  padding: 1.2rem;
+  max-width: 460px;
+}
+
+form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  border: 1px solid #b7cad8;
+  border-radius: 8px;
+  padding: 0.55rem;
+}
+
+button {
+  margin-top: 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: #0b4a6f;
+  color: #ffffff;
+  padding: 0.65rem;
+  font-weight: 600;
+}
+
+.error {
+  color: #a0232d;
+}

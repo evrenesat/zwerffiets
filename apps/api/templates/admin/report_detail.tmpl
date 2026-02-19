@@ -1,0 +1,100 @@
+{{define "content"}}
+<section class="card">
+  <p><a href="{{.BackURL}}">{{index .Text "report_back"}}</a></p>
+
+  <div class="header-split">
+    <h1>{{index .Text "report_title"}} {{.PublicID}}</h1>
+    
+    <div class="header-actions">
+      {{if gt (len .StatusActions) 0}}
+      <form method="post" action="/bikeadmin/reports/{{.ReportID}}/status" class="inline-form">
+        <input type="hidden" name="next" value="{{.ActionNext}}" />
+        <select name="status" aria-label="Change status">
+          {{range $action := .StatusActions}}
+          <option value="{{$action.Status}}">{{$action.Label}}</option>
+          {{end}}
+        </select>
+        <button type="submit">{{index .Text "action_apply"}}</button>
+      </form>
+      {{end}}
+
+      {{if .IsAdmin}}
+      <a href="/bikeadmin/reports/{{.ReportID}}/edit?next={{.ActionNext}}" class="button">{{index .Text "report_edit_button"}}</a>
+      {{end}}
+    </div>
+  </div>
+
+  <div class="meta-grid">
+    <p><strong>{{index .Text "col_status"}}:</strong> {{.StatusLabel}}</p>
+    <p><strong>{{index .Text "report_location"}}:</strong> {{.Location}}</p>
+    <p><strong>{{index .Text "report_address"}}:</strong> {{.Address}}</p>
+    <p><strong>{{index .Text "report_city"}}:</strong> {{.City}}</p>
+    <p><strong>{{index .Text "report_municipality"}}:</strong> {{.Municipality}}</p>
+    <div id="detail-map" class="detail-map" data-lat="{{.Lat}}" data-lng="{{.Lng}}"></div>
+    <p><strong>{{index .Text "report_tags"}}:</strong> {{.TagsLabel}}</p>
+    <p><strong>{{index .Text "report_note"}}:</strong> {{.NoteLabel}}</p>
+  </div>
+
+  {{/* Status actions moved to header */}}
+
+  <h2>{{index .Text "report_photos"}}</h2>
+  {{if eq (len .Photos) 0}}
+  <p class="muted">{{index .Text "photo_missing"}}</p>
+  {{else}}
+  <div class="photo-grid" data-photo-gallery>
+    {{range $photo := .Photos}}
+    <button type="button" class="photo-button" data-photo-url="{{$photo.URL}}" data-photo-alt="{{$.PublicID}}" aria-label="photo {{$photo.ID}}">
+      <img src="{{$photo.URL}}" alt="{{$.PublicID}}" class="photo-thumb" loading="lazy" />
+    </button>
+    {{end}}
+  </div>
+
+  <div id="photo-modal" class="photo-modal hidden" role="dialog" aria-modal="true">
+    <div class="photo-modal-backdrop" data-photo-close></div>
+    <div class="photo-modal-content">
+      <button type="button" class="photo-close" data-photo-close aria-label="close">×</button>
+      <button type="button" class="photo-nav photo-nav-left" data-photo-prev aria-label="prev">‹</button>
+      <img id="photo-modal-image" src="" alt="" class="photo-modal-image" />
+      <button type="button" class="photo-nav photo-nav-right" data-photo-next aria-label="next">›</button>
+    </div>
+  </div>
+  {{end}}
+
+  {{/* Merge duplicates UI hidden — will be replaced by list-view bulk actions
+  <h2>{{index .Text "report_merge_title"}}</h2>
+  <p>{{index .Text "report_merge_hint"}}</p>
+  <form method="post" action="/bikeadmin/reports/{{.ReportID}}/merge" class="stack-form">
+    <input type="hidden" name="next" value="{{.ActionNext}}" />
+    <label for="duplicate_report_ids">{{index .Text "report_merge_label"}}</label>
+    <input id="duplicate_report_ids" name="duplicate_report_ids" value="{{.MergeInput}}" placeholder="id1,id2" />
+    <button type="submit">{{index .Text "report_merge_button"}}</button>
+  </form>
+  */}}
+
+  <h2>{{index .Text "report_signal_title"}}</h2>
+  <div class="meta-grid">
+    <p><strong>{{index .Text "report_signal_strength"}}:</strong> {{.SignalStrengthLabel}}</p>
+    <p><strong>{{index .Text "report_signal_group"}}:</strong> {{.BikeGroupID}}</p>
+    <p><strong>{{index .Text "report_signal_total_reports"}}:</strong> {{.SignalSummary.TotalReports}}</p>
+    <p><strong>{{index .Text "report_signal_unique_reporters"}}:</strong> {{.SignalSummary.UniqueReporters}}</p>
+    <p><strong>{{index .Text "report_signal_same_reconfirmations"}}:</strong> {{.SignalSummary.SameReporterReconfirmations}}</p>
+    <p><strong>{{index .Text "report_signal_distinct_reconfirmations"}}:</strong> {{.SignalSummary.DistinctReporterReconfirmations}}</p>
+    <p><strong>{{index .Text "report_signal_first_qualifying"}}:</strong> {{.SignalSummary.FirstQualifying}}</p>
+    <p><strong>{{index .Text "report_signal_last_qualifying"}}:</strong> {{.SignalSummary.LastQualifying}}</p>
+  </div>
+
+  <h2>{{index .Text "report_signal_timeline"}}</h2>
+  <ul>
+    {{range $item := .Timeline}}
+    <li><strong>{{$item.ReporterLabel}}</strong> {{$item.CreatedAt}}: {{$item.Description}}</li>
+    {{end}}
+  </ul>
+
+  <h2>{{index .Text "report_events_timeline"}}</h2>
+  <ul>
+    {{range $item := .Events}}
+    <li><strong>{{$item.TypeLabel}}</strong> {{$item.Actor}} {{$item.CreatedAt}}</li>
+    {{end}}
+  </ul>
+</section>
+{{end}}

@@ -1,0 +1,209 @@
+{{define "content"}}
+<section class="card">
+  <div class="header-split">
+    <h1>{{index .Text "page_title_users"}}</h1>
+  </div>
+
+  <div class="table-controls">
+    <form id="bulk-action-form" method="post" action="/bikeadmin/users/bulk" class="bulk-form" onsubmit="return handleBulkSubmit(event)">
+      <input type="hidden" name="next" value="{{.Filters.CurrentURL}}" />
+      <div class="bulk-bar visible" id="bulk-bar">
+        <span class="bulk-count" id="bulk-count">0</span>
+        <select name="action" id="bulk-action" class="compact">
+          <option value="">{{index .Text "bulk_choose_action"}}</option>
+          <option value="activate">{{index .Text "action_activate"}}</option>
+          <option value="deactivate">{{index .Text "action_deactivate"}}</option>
+          <option value="delete">{{index .Text "action_delete"}}</option>
+        </select>
+        <button type="submit" id="bulk-submit" disabled aria-label="{{index .Text "bulk_apply"}}">
+          ↵
+        </button>
+      </div>
+    </form>
+
+    <form method="get" action="/bikeadmin/users" class="filters search-only">
+      <label>
+        <input type="text" name="q" value="{{.Filters.Q}}" placeholder="{{index .Text "placeholder_search_users"}}" class="compact" />
+      </label>
+      <label>
+        <select name="status" class="compact">
+          <option value="" {{if eq .Filters.Status ""}}selected{{end}}>{{index .Text "filter_all"}}</option>
+          <option value="active" {{if eq .Filters.Status "active"}}selected{{end}}>{{index .Text "status_active"}}</option>
+          <option value="inactive" {{if eq .Filters.Status "inactive"}}selected{{end}}>{{index .Text "status_inactive"}}</option>
+        </select>
+      </label>
+      <button type="submit" aria-label="{{index .Text "filter_apply"}}">↵</button>
+    </form>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" id="select-all" aria-label="select all" />
+          </th>
+          <th>ID</th>
+          <th>{{index .Text "col_user_email"}}</th>
+          <th>{{index .Text "col_user_status"}}</th>
+          <th>{{index .Text "col_user_created"}}</th>
+          <th>{{index .Text "col_actions"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Users}}
+        <tr>
+          <td>
+            <input type="checkbox" name="user_ids" value="{{.ID}}" class="row-checkbox" form="bulk-action-form" />
+          </td>
+          <td>{{.ID}}</td>
+          <td>{{.Email}}</td>
+          <td>
+            {{if .IsActive}}
+            <span class="signal-badge signal-strong">{{index $.Text "status_active"}}</span>
+            {{else}}
+            <span class="signal-badge signal-none">{{index $.Text "status_inactive"}}</span>
+            {{end}}
+          </td>
+          <td>{{.CreatedAt}}</td>
+          <td>
+            <a href="/bikeadmin/users/{{.ID}}/edit" class="link-button">{{index $.Text "report_edit_button"}}</a>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+
+  {{if eq (len .Users) 0}}
+  <p class="muted">No users found.</p>
+  {{end}}
+
+  {{if .Pagination.TotalCount}}
+  <div class="pagination">
+    <div class="pagination-info">
+      {{.Pagination.CurrentPage}} / {{.Pagination.TotalPages}}
+    </div>
+    <div class="pagination-controls">
+      {{if .Pagination.HasPrev}}
+      <a href="{{.Pagination.PageURL}}{{.Pagination.PageSeparator}}page={{.Pagination.PrevPage}}" class="button secondary">
+        ←
+      </a>
+      {{else}}
+      <span class="button secondary disabled">←</span>
+      {{end}}
+
+      {{if .Pagination.HasNext}}
+      <a href="{{.Pagination.PageURL}}{{.Pagination.PageSeparator}}page={{.Pagination.NextPage}}" class="button secondary">
+        →
+      </a>
+      {{else}}
+      <span class="button secondary disabled">→</span>
+      {{end}}
+    </div>
+  </div>
+  {{end}}
+</section>
+
+<script>
+  const selectAll = document.getElementById('select-all');
+  const checkboxes = document.querySelectorAll('.row-checkbox');
+  const bulkBar = document.getElementById('bulk-bar');
+  const bulkCount = document.getElementById('bulk-count');
+  const bulkSubmit = document.getElementById('bulk-submit');
+  const bulkAction = document.getElementById('bulk-action');
+
+  function updateBulkBar() {
+    const count = document.querySelectorAll('.row-checkbox:checked').length;
+    bulkCount.textContent = count;
+    bulkSubmit.disabled = count === 0 || bulkAction.value === '';
+    
+    if (count > 0) {
+      bulkBar.classList.add('visible');
+      bulkCount.classList.add('visible');
+    } else {
+      bulkBar.classList.remove('visible');
+      bulkCount.classList.remove('visible');
+    }
+  }
+
+  selectAll.addEventListener('change', (e) => {
+    checkboxes.forEach(cb => cb.checked = e.target.checked);
+    updateBulkBar();
+  });
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', updateBulkBar);
+  });
+
+  bulkAction.addEventListener('change', updateBulkBar);
+
+  function handleBulkSubmit(e) {
+    const action = bulkAction.value;
+    if (action === 'delete') {
+      if (!confirm('{{index .Text "user_confirm_delete"}}')) {
+        e.preventDefault();
+        return false;
+      }
+    }
+    return true;
+  }
+</script>
+
+<style>
+  .table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  .bulk-form {
+    flex: 0 1 auto;
+  }
+  .bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0;
+    background: none;
+    border: none;
+    position: static;
+    margin: 0;
+  }
+  .bulk-count {
+    font-weight: bold;
+    background: var(--admin-primary);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+    visibility: hidden;
+    min-width: auto;
+  }
+  .bulk-count.visible {
+    visibility: visible;
+  }
+  .search-only {
+    flex: 0 1 auto;
+    margin: 0;
+  }
+  .search-only label {
+    margin: 0;
+  }
+  input.compact, select.compact {
+    width: auto;
+    min-width: 200px;
+  }
+  input[type="checkbox"] {
+    width: 1.1rem;
+    min-height: 1.1rem;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  #select-all {
+    margin: 0 auto;
+  }
+</style>
+{{end}}

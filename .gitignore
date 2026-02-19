@@ -1,0 +1,43 @@
+# Node/Bun
+node_modules/
+*.log
+bun.lockb
+
+# SvelteKit/Vite
+.svelte-kit/
+dist/
+coverage/
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# OS/Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Project temp
+/temp/*
+!/temp/.gitkeep
+
+# App-level artifacts
+apps/web/node_modules/
+apps/web/.svelte-kit/
+apps/web/build/
+.env
+
+
+
+tasks/
+
+apps/api/zwerffiets/api
+.claude/settings.local.json
+CLAUDE.md
+AGENTS.md
+apps/api/api
+apps/api/zwerffiets/exports/
+uploads
+scripts/
+infra

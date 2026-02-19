@@ -1,0 +1,1 @@
+-- redundant migration file, content merged into 0001_init.sql

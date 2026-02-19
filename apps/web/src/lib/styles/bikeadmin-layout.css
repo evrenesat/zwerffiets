@@ -1,0 +1,47 @@
+.operator-shell {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.operator-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #dbe6ee;
+  border-radius: 12px;
+  padding: 0.9rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+p {
+  margin: 0.25rem 0 0;
+  color: #395166;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tabs a {
+  text-decoration: none;
+  color: #0b4a6f;
+  background: #ffffff;
+  border: 1px solid #dbe6ee;
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  font-weight: 600;
+}
+
+button {
+  border: 1px solid #cfdae4;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  font-weight: 600;
+}

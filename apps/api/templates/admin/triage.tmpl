@@ -1,0 +1,177 @@
+{{define "content"}}
+<section class="card">
+  <h1>{{index .Text "page_title_triage"}}</h1>
+
+  <form method="get" action="/bikeadmin" class="filters">
+    <label>
+      {{index .Text "filter_status"}}
+      <select name="status">
+        <option value="" {{if eq .Filters.Status ""}}selected{{end}}>{{index .Text "filter_all"}}</option>
+        <option value="new" {{if eq .Filters.Status "new"}}selected{{end}}>{{index .Text "status_new"}}</option>
+        <option value="triaged" {{if eq .Filters.Status "triaged"}}selected{{end}}>{{index .Text "status_triaged"}}</option>
+        <option value="forwarded" {{if eq .Filters.Status "forwarded"}}selected{{end}}>{{index .Text "status_forwarded"}}</option>
+        <option value="resolved" {{if eq .Filters.Status "resolved"}}selected{{end}}>{{index .Text "status_resolved"}}</option>
+        <option value="invalid" {{if eq .Filters.Status "invalid"}}selected{{end}}>{{index .Text "status_invalid"}}</option>
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "filter_city"}}
+      <select name="city">
+        <option value="" {{if eq .Filters.City ""}}selected{{end}}>{{index .Text "filter_all"}}</option>
+        {{range .CityOptions}}
+        <option value="{{.}}" {{if eq $.Filters.City .}}selected{{end}}>{{.}}</option>
+        {{end}}
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "filter_signal"}}
+      <select name="signal_strength">
+        <option value="" {{if eq .Filters.SignalStrength ""}}selected{{end}}>{{index .Text "filter_all"}}</option>
+        <option value="strong_distinct_reporters" {{if eq .Filters.SignalStrength "strong_distinct_reporters"}}selected{{end}}>{{index .Text "signal_strong_distinct_reporters"}}</option>
+        <option value="weak_same_reporter" {{if eq .Filters.SignalStrength "weak_same_reporter"}}selected{{end}}>{{index .Text "signal_weak_same_reporter"}}</option>
+        <option value="none" {{if eq .Filters.SignalStrength "none"}}selected{{end}}>{{index .Text "signal_none"}}</option>
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "filter_qualifying"}}
+      <select name="has_qualifying_reconfirmation">
+        <option value="" {{if eq .Filters.HasQualifyingReconfirmation ""}}selected{{end}}>{{index .Text "filter_all"}}</option>
+        <option value="true" {{if eq .Filters.HasQualifyingReconfirmation "true"}}selected{{end}}>{{index .Text "filter_yes"}}</option>
+        <option value="false" {{if eq .Filters.HasQualifyingReconfirmation "false"}}selected{{end}}>{{index .Text "filter_no"}}</option>
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "filter_strong_only"}}
+      <select name="strong_only">
+        <option value="" {{if eq .Filters.StrongOnly ""}}selected{{end}}>{{index .Text "filter_all"}}</option>
+        <option value="true" {{if eq .Filters.StrongOnly "true"}}selected{{end}}>{{index .Text "filter_yes"}}</option>
+        <option value="false" {{if eq .Filters.StrongOnly "false"}}selected{{end}}>{{index .Text "filter_no"}}</option>
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "filter_sort"}}
+      <select name="sort">
+        <option value="newest" {{if eq .Filters.Sort "newest"}}selected{{end}}>{{index .Text "sort_newest"}}</option>
+        <option value="signal" {{if eq .Filters.Sort "signal"}}selected{{end}}>{{index .Text "sort_signal"}}</option>
+      </select>
+    </label>
+
+    <button type="submit" aria-label="{{index .Text "filter_apply"}}">↵</button>
+  </form>
+
+  <form
+    id="bulk-action-form"
+    method="post"
+    action="/bikeadmin/reports/bulk-status"
+  >
+    <input type="hidden" name="next" value="{{.Filters.CurrentURL}}" />
+
+    <div class="bulk-bar" id="bulk-bar">
+      <span class="bulk-count" id="bulk-count">0</span>
+      <select name="status" id="bulk-status">
+        <option value="">{{index .Text "bulk_choose_action"}}</option>
+        <option value="triaged">{{index .Text "action_mark_triaged"}}</option>
+        <option value="forwarded">{{index .Text "action_mark_forwarded"}}</option>
+        <option value="resolved">{{index .Text "action_mark_resolved"}}</option>
+        <option value="invalid">{{index .Text "action_mark_invalid"}}</option>
+      </select>
+      <button type="submit" id="bulk-submit" disabled aria-label="{{index .Text "bulk_apply"}}">
+        ↵
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <input type="checkbox" id="select-all" aria-label="select all" />
+            </th>
+            <th>{{index .Text "col_public_id"}}</th>
+            <th>{{index .Text "col_photo"}}</th>
+            <th>{{index .Text "col_status"}}</th>
+            <th>{{index .Text "col_city"}}</th>
+            <th>{{index .Text "col_signal"}}</th>
+            <th>{{index .Text "col_unique_reporters"}}</th>
+            <th>{{index .Text "col_last_reconfirmed"}}</th>
+            <th>{{index .Text "col_created"}}</th>
+            <th>{{index .Text "col_tags"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range $report := .Reports}}
+          <tr>
+            <td>
+              <input
+                type="checkbox"
+                name="report_ids"
+                value="{{$report.ID}}"
+                class="row-checkbox"
+              />
+            </td>
+            <td><a href="{{$report.DetailURL}}">{{$report.PublicID}}</a></td>
+            <td>
+              {{if $report.PreviewPhotoURL}}
+              <img
+                src="{{$report.PreviewPhotoURL}}"
+                alt="preview {{$report.PublicID}}"
+                class="thumb"
+                loading="lazy"
+              />
+              {{else}}
+              <span class="muted">{{index $.Text "photo_missing"}}</span>
+              {{end}}
+            </td>
+            <td>{{$report.StatusLabel}}</td>
+            <td>{{$report.City}}</td>
+            <td>
+              <span class="signal-badge {{$report.SignalClass}}"
+                >{{$report.SignalLabel}}</span
+              >
+            </td>
+            <td>{{$report.UniqueReporters}}</td>
+            <td>{{$report.LastReconfirmationAt}}</td>
+            <td>{{$report.CreatedAt}}</td>
+            <td>{{$report.TagsLabel}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+  </form>
+
+  {{if eq (len .Reports) 0}}
+  <p class="muted">{{index .Text "triage_empty"}}</p>
+  {{end}}
+
+  {{if .Pagination.TotalCount}}
+  <div class="pagination">
+    <div class="pagination-info">
+      {{.Pagination.CurrentPage}} / {{.Pagination.TotalPages}}
+    </div>
+    <div class="pagination-controls">
+      {{if .Pagination.HasPrev}}
+      <a href="{{.Pagination.PageURL}}{{.Pagination.PageSeparator}}page={{.Pagination.PrevPage}}" class="button secondary">
+        ←
+      </a>
+      {{else}}
+      <span class="button secondary disabled">←</span>
+      {{end}}
+
+      {{if .Pagination.HasNext}}
+      <a href="{{.Pagination.PageURL}}{{.Pagination.PageSeparator}}page={{.Pagination.NextPage}}" class="button secondary">
+        →
+      </a>
+      {{else}}
+      <span class="button secondary disabled">→</span>
+      {{end}}
+    </div>
+  </div>
+  {{end}}
+</section>
+{{end}}

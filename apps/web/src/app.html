@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html.lang-switching body {
+        visibility: hidden;
+        opacity: 0;
+      }
+    </style>
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <script>
+      (function () {
+        var renderLang = "nl"; // The language the HTML is generated in (SSR)
+        var storageKey = "zwerffiets-ui-language";
+        var storedLang = localStorage.getItem(storageKey);
+        var browserLang = navigator.language.toLowerCase().startsWith("nl")
+          ? "nl"
+          : "en";
+        var targetLang = storedLang || browserLang;
+
+        if (targetLang !== renderLang) {
+          document.documentElement.classList.add("lang-switching");
+        }
+      })();
+    </script>
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>

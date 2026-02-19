@@ -1,0 +1,42 @@
+{{define "content"}}
+<section class="card">
+  <h1>{{index .Text "page_title_operator_edit"}}</h1>
+
+  <form method="post" action="/bikeadmin/operators/{{.OperatorID}}/edit" class="stack-form">
+    <label>
+      {{index .Text "operator_email"}}
+      <input type="email" name="email" value="{{.Email}}" required autocomplete="off" />
+    </label>
+
+    <label>
+      {{index .Text "operator_role"}}
+      <select name="role" required>
+        {{range .Roles}}
+        <option value="{{.}}" {{if eq . $.Role}}selected{{end}}>{{index $.Text (printf "role_%s" .)}}</option>
+        {{end}}
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "operator_municipality"}}
+      <select name="municipality">
+        <option value="">—</option>
+        {{range .Municipalities}}
+        <option value="{{.}}" {{if eq . $.Municipality}}selected{{end}}>{{.}}</option>
+        {{end}}
+      </select>
+    </label>
+
+    <label>
+      {{index .Text "operator_password"}}
+      <input type="password" name="password" autocomplete="new-password" />
+      <small>{{index .Text "operator_password_hint"}}</small>
+    </label>
+
+    <div class="form-actions">
+      <button type="submit">{{index .Text "operator_save"}}</button>
+      <a href="/bikeadmin/operators" class="button button-secondary">{{index .Text "ui_cancel"}}</a>
+    </div>
+  </form>
+</section>
+{{end}}

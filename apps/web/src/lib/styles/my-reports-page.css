@@ -1,0 +1,145 @@
+.my-reports-page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.my-reports-title {
+  margin: 0 0 1.1rem;
+  font-size: 2.15rem;
+  font-family: Georgia, 'Palatino Linotype', serif;
+  line-height: 1.15;
+  color: var(--fg);
+}
+
+.my-reports-state {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+}
+
+.my-reports-error {
+  background: #fdecec;
+  border: 1px solid #f1b9b3;
+  color: #8d2b20;
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.my-reports-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  padding: 1rem;
+}
+
+.my-reports-empty p {
+  margin: 0 0 0.75rem;
+  color: var(--fg-muted);
+}
+
+.my-reports-new-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  color: var(--fg);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.my-reports-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.my-report-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  padding: 0.85rem 0.95rem;
+}
+
+.my-report-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.my-report-id {
+  color: var(--fg-muted);
+  font-size: 0.86rem;
+  letter-spacing: 0.02em;
+}
+
+.my-report-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.22rem 0.62rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.my-report-status-new {
+  background: #e8f1fb;
+  color: #275f95;
+}
+
+.my-report-status-triaged {
+  background: #fbf4da;
+  color: #826909;
+}
+
+.my-report-status-forwarded {
+  background: #efe8f8;
+  color: #5f478a;
+}
+
+.my-report-status-resolved {
+  background: #e4f3e9;
+  color: #2d7144;
+}
+
+.my-report-status-invalid {
+  background: #eceef0;
+  color: #4d5a66;
+}
+
+.my-report-address {
+  margin: 0 0 0.35rem;
+  color: var(--fg);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.my-report-time {
+  margin: 0 0 0.65rem;
+  color: var(--fg-muted);
+  font-size: 0.88rem;
+}
+
+.my-report-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.my-report-link:hover {
+  color: #32573e;
+}

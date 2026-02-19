@@ -1,0 +1,66 @@
+{{define "layout"}}
+<!doctype html>
+<html lang="{{.Lang}}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{.Title}}</title>
+  <link rel="stylesheet" href="/bikeadmin/static/admin.css" />
+  {{if .IncludeMapLibre}}
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.18.0/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@5.18.0/dist/maplibre-gl.js"></script>
+  {{end}}
+</head>
+<body>
+  <div class="admin-shell">
+    <header class="admin-header">
+      <div class="brand-block">
+        <a class="brand" href="/bikeadmin">{{index .Text "app_title"}}</a>
+        {{if .Session}}
+        <p class="session-copy">{{index .Text "workspace_signed_in"}} <strong>{{.Session.Email}}</strong> ({{.Session.Role}})</p>
+        {{end}}
+      </div>
+      <div class="header-actions">
+        <form method="post" action="/bikeadmin/language" class="inline-form">
+          <input type="hidden" name="next" value="{{.CurrentPath}}" />
+          <select id="language-picker" name="language" onchange="this.form.submit()">
+            <option value="nl" {{if eq .Lang "nl"}}selected{{end}}>NL</option>
+            <option value="en" {{if eq .Lang "en"}}selected{{end}}>EN</option>
+          </select>
+        </form>
+        {{if .Session}}
+        <form method="post" action="/bikeadmin/logout" class="inline-form">
+          <button type="submit">{{index .Text "nav_logout"}}</button>
+        </form>
+        {{end}}
+      </div>
+    </header>
+
+    {{if .Session}}
+    <nav class="tabs" aria-label="Admin navigation">
+      <a href="/bikeadmin" class="{{if eq .ActiveNav "triage"}}active{{end}}">{{index .Text "nav_triage"}}</a>
+      <a href="/bikeadmin/map" class="{{if eq .ActiveNav "map"}}active{{end}}">{{index .Text "nav_map"}}</a>
+      {{if eq .Session.Role "admin"}}
+      <a href="/bikeadmin/operators" class="{{if eq .ActiveNav "operators"}}active{{end}}">{{index .Text "nav_operators"}}</a>
+      <a href="/bikeadmin/users" class="{{if eq .ActiveNav "users"}}active{{end}}">{{index .Text "nav_users"}}</a>
+      {{end}}
+      <a href="/bikeadmin/exports" class="{{if eq .ActiveNav "exports"}}active{{end}}">{{index .Text "nav_exports"}}</a>
+    </nav>
+    {{end}}
+
+    <main class="admin-main">
+      {{if .ErrorMessage}}
+      <p class="flash flash-error">{{.ErrorMessage}}</p>
+      {{end}}
+      {{if .NoticeMessage}}
+      <p class="flash flash-notice">{{.NoticeMessage}}</p>
+      {{end}}
+
+      {{template "content" .}}
+    </main>
+  </div>
+
+  <script src="/bikeadmin/static/admin.js" defer></script>
+</body>
+</html>
+{{end}}

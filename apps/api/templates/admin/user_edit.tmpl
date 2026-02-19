@@ -1,0 +1,23 @@
+{{define "content"}}
+<section class="card">
+  <h1>{{index .Text "page_title_user_edit"}}</h1>
+
+  <form method="post" action="/bikeadmin/users/{{.User.ID}}/edit" class="stack-form">
+    <label>
+      {{index .Text "col_user_email"}}
+      <input type="email" name="email" value="{{.User.Email}}" required />
+    </label>
+
+
+    <label class="checkbox-label">
+      <input type="checkbox" name="is_active" {{if .User.IsActive}}checked{{end}} />
+      {{index .Text "status_active"}}
+    </label>
+
+    <div class="form-actions">
+      <button type="submit">{{index .Text "user_save"}}</button>
+      <a href="/bikeadmin/users" class="button button-secondary">{{index .Text "ui_cancel"}}</a>
+    </div>
+  </form>
+</section>
+{{end}}
