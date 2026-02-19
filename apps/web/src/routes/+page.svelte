@@ -1,8 +1,26 @@
 <script lang="ts">
+  import { PUBLIC_BASE_URL } from "$env/static/public";
   import { t, uiLanguage } from "$lib/i18n";
   import BrandMark from "$lib/components/BrandMark.svelte";
   import "$lib/styles/landing.css";
 </script>
+
+<svelte:head>
+  <meta property="og:title" content={t($uiLanguage, "landing_title")} />
+  <meta
+    property="og:description"
+    content={t($uiLanguage, "landing_description")}
+  />
+  <meta
+    property="og:url"
+    content={PUBLIC_BASE_URL || "https://zwerffiets.org"}
+  />
+  <meta
+    property="og:image"
+    content="{PUBLIC_BASE_URL || 'https://zwerffiets.org'}/logo-zwerffiets.png"
+  />
+  <meta property="og:type" content="website" />
+</svelte:head>
 
 <div class="landing-page">
   <!-- Hero -->
@@ -10,7 +28,6 @@
     <div class="lp-container">
       <div class="hero-grid">
         <div class="card hero-intro">
-          <BrandMark subtitle={t($uiLanguage, "app_subtitle")} light={true} />
           <h1>{t($uiLanguage, "landing_title")}</h1>
           <p>{t($uiLanguage, "landing_description")}</p>
           <div class="hero-actions">

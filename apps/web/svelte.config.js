@@ -6,7 +6,7 @@ const BUILD_ID = process.env.BUILD_ID ?? 'dev';
 const config = {
   kit: {
     adapter: adapter({
-      fallback: 'index.html'
+      fallback: '200.html'
     }),
     appDir: `_app_${BUILD_ID}`,
     alias: {

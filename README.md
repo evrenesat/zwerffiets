@@ -77,8 +77,8 @@ bun run api:test
 
 ## Key paths
 
-- Frontend: `/Users/evren/code/zwerffiets/apps/web`
-- Backend: `/Users/evren/code/zwerffiets/apps/api`
-- Architecture: `/Users/evren/code/zwerffiets/ARCHITECTURE.md`
-- Changelog (public): `/Users/evren/code/zwerffiets/CHANGELOG.md`
-- Dev log (internal): `/Users/evren/code/zwerffiets/DEVLOG.md`
+- Frontend: `apps/web`
+- Backend: `apps/api`
+- Architecture: `ARCHITECTURE.md`
+- Changelog (public): `CHANGELOG.md`
+- Dev log (internal): `DEVLOG.md`

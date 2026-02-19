@@ -49,7 +49,7 @@
         <p class="section-label">{t($uiLanguage, 'about_os_label')}</p>
         <h2>{t($uiLanguage, 'about_os_title')}</h2>
         <p>{t($uiLanguage, 'about_os_text')}</p>
-        <a class="btn-link" href="https://github.com/evrenesat/zwerffiets">{t($uiLanguage, 'about_contact_github')}</a>
+        <a class="btn-link" href="https://github.com/zwerffiets/zwerffiets">{t($uiLanguage, 'about_contact_github')}</a>
       </div>
       <div>
         <p class="section-label">{t($uiLanguage, 'about_contact_label')}</p>

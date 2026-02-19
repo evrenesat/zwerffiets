@@ -1,10 +1,9 @@
 <script lang="ts">
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
-  import { env as publicEnv } from "$env/dynamic/public";
   import { onMount } from "svelte";
+  import { PUBLIC_BASE_URL, PUBLIC_FB_APP_ID } from "$env/static/public";
   import { derived } from "svelte/store";
-  import favicon from "$lib/assets/favicon.svg";
   import { t, uiLanguage } from "$lib/i18n";
   import { layoutNavVariant } from "$lib/client/layout-nav";
   import {
@@ -17,9 +16,10 @@
 
   let { children } = $props();
 
-  const canonicalBase = (
-    publicEnv.PUBLIC_BASE_URL || "https://zwerffiets.org"
-  ).replace(/\/$/, "");
+  const canonicalBase = (PUBLIC_BASE_URL || "https://zwerffiets.org").replace(
+    /\/$/,
+    "",
+  );
   const buildId = __BUILD_ID__;
   let isUserAuthenticated = $state(false);
 
@@ -90,11 +90,13 @@
 </script>
 
 <svelte:head>
-  <link rel="icon" href={`${favicon}?v=${buildId}`} />
+  <link rel="icon" href={`/favicon.png?v=${buildId}`} />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="manifest" href={`/manifest.webmanifest?v=${buildId}`} />
   <meta name="theme-color" content="#ffffff" />
   <link rel="canonical" href={`${canonicalBase}${$page.url.pathname}`} />
+  <meta property="og:image" content="{canonicalBase}/logo-zwerffiets.png" />
+  <meta property="fb:app_id" content={PUBLIC_FB_APP_ID} />
 </svelte:head>
 
 <div class="app-shell">
@@ -137,7 +139,7 @@
       <nav class="footer-nav">
         <a href="/privacy">{t($uiLanguage, "footer_privacy")}</a>
         <a href="/about">{t($uiLanguage, "footer_about")}</a>
-        <a href="https://github.com/evrenesat/zwerffiets">GitHub</a>
+        <a href="https://github.com/zwerffiets/zwerffiets">GitHub</a>
         {#if isUserAuthenticated}
           <button class="footer-logout-button" onclick={handleFooterLogout}>
             {t($uiLanguage, "footer_logout")}

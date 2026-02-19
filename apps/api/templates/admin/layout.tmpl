@@ -7,15 +7,17 @@
   <title>{{.Title}}</title>
   <link rel="stylesheet" href="/bikeadmin/static/admin.css" />
   {{if .IncludeMapLibre}}
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.18.0/dist/maplibre-gl.css" />
-  <script src="https://unpkg.com/maplibre-gl@5.18.0/dist/maplibre-gl.js"></script>
+  <link rel="stylesheet" href="/bikeadmin/static/assets/maplibre-gl.css" />
+  <script src="/bikeadmin/static/assets/maplibre-gl.js"></script>
   {{end}}
 </head>
 <body>
   <div class="admin-shell">
     <header class="admin-header">
       <div class="brand-block">
-        <a class="brand" href="/bikeadmin">{{index .Text "app_title"}}</a>
+        <a class="brand" href="/bikeadmin">
+          <img src="/bikeadmin/static/assets/logo-zwerffiets.png" alt="ZwerfFiets" class="brand-logo" style="height: 64px; vertical-align: middle; margin-right: 8px;">
+        </a>
         {{if .Session}}
         <p class="session-copy">{{index .Text "workspace_signed_in"}} <strong>{{.Session.Email}}</strong> ({{.Session.Role}})</p>
         {{end}}

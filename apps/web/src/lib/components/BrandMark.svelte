@@ -1,21 +1,21 @@
 <script lang="ts">
-interface Props {
-  compact?: boolean;
-  subtitle?: string;
-  light?: boolean;
-}
+  import logo from "$lib/assets/logo-zwerffiets.png";
 
-let { compact = false, subtitle = 'Meld verlaten fietsen in minder dan een minuut.', light = false }: Props = $props();
+  interface Props {
+    compact?: boolean;
+    subtitle?: string;
+    light?: boolean;
+  }
+
+  let {
+    compact = false,
+    subtitle = "Meld verlaten fietsen in minder dan een minuut.",
+    light = false,
+  }: Props = $props();
 </script>
 
 <div class:compact class="brandmark" aria-label="ZwerfFiets logo">
-  <div class="emoji" aria-hidden="true">🚲</div>
-  <div class="text">
-    <strong style:color={light ? '#171717' : '#f7fbff'}>ZwerfFiets</strong>
-    {#if !compact}
-      <span style:color={light ? '#6b7280' : '#d8efff'}>{subtitle}</span>
-    {/if}
-  </div>
+  <img src={logo} alt="ZwerfFiets" class="logo-img" />
 </div>
 
 <style>
@@ -25,39 +25,17 @@ let { compact = false, subtitle = 'Meld verlaten fietsen in minder dan een minuu
     gap: 0.7rem;
   }
 
-  .emoji {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 0.9rem;
-    display: grid;
-    place-items: center;
-    font-size: 1.8rem;
-    background: #4a7c59;
-    box-shadow: 0 4px 12px rgba(74, 124, 89, 0.3);
+  .logo-img {
+    width: 8rem;
+    object-fit: contain;
+    /* Optional: add a slight drop shadow if needed, but the image might already have it */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 
-  .text {
-    display: grid;
-    gap: 0.1rem;
-  }
+  /* Text styles removed as text is no longer displayed */
 
-  strong {
-    font-size: 1.1rem;
-    letter-spacing: 0.01em;
-  }
-
-  span {
-    font-size: 0.82rem;
-  }
-
-  .compact .emoji {
-    width: 2.2rem;
-    height: 2.2rem;
-    font-size: 1.3rem;
-    border-radius: 0.7rem;
-  }
-
-  .compact strong {
-    font-size: 1rem;
+  .compact .logo-img {
+    width: 6.4rem;
+    height: 6.4rem;
   }
 </style>
