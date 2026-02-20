@@ -1,8 +1,12 @@
 # ZwerfFiets
 
-**ZwerfFiets** is an open-source, privacy-first platform designed to streamline the reporting and removal of abandoned bicycles in public spaces.
+<img src="apps/web/static/images/bike-kitchen.png" alt="bike kitchen logo" width="120" align="right">
 
-Built for municipalities and citizens, it bridges the gap between community reports and efficient enforcement workflows.
+<img src="apps/web/static/logo-zwerffiets.png" alt="bike kitchen logo" width="140" align="left">
+
+**ZwerfFiets** is an privacy-first platform designed to streamline the reporting and removal of abandoned bicycles in public spaces.
+
+Built by [Bike Kitchen NL](https://bikekitchennl.com/) for municipalities and citizens, it bridges the gap between community reports and efficient enforcement workflows.
 
 ## Why ZwerfFiets?
 
@@ -82,3 +86,7 @@ bun run api:test
 - Architecture: `ARCHITECTURE.md`
 - Changelog (public): `CHANGELOG.md`
 - Dev log (internal): `DEVLOG.md`
+
+## License
+
+This project is licensed under the [Functional Source License, Version 1.1, MIT Future License (FSL-1.1-MIT)](LICENSE).

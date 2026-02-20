@@ -7,20 +7,31 @@
   let posts = $state<BlogPost[]>([]);
   let total = $state(0);
   let loading = $state(true);
+  let currentPage = $state(1);
+  const pageSize = 5;
 
-  onMount(async () => {
+  async function loadPage(page: number) {
+    loading = true;
     try {
-      const res = await fetch("/api/v1/blog?limit=10&offset=0");
+      const offset = (page - 1) * pageSize;
+      const res = await fetch(
+        `/api/v1/blog?limit=${pageSize}&offset=${offset}`,
+      );
       if (res.ok) {
         const data = await res.json();
         posts = data.posts || [];
         total = data.total || 0;
+        currentPage = page;
       }
     } catch (e) {
       console.error("Failed to load blog posts", e);
     } finally {
       loading = false;
     }
+  }
+
+  onMount(() => {
+    loadPage(1);
   });
 </script>
 
@@ -51,10 +62,7 @@
             </span>
           </div>
           <div class="blog-excerpt">
-            <!-- Basic excerpt: first 200 chars of text content -->
-            {@html post.content_html
-              .replace(/<[^>]*>/g, "")
-              .substring(0, 200)}...
+            {@html post.content_html}
           </div>
           <a href="/blog/{post.slug}" class="blog-read-more"> Read more → </a>
         </article>
@@ -64,9 +72,30 @@
     {/if}
   </div>
 
-  {#if total > 10}
-    <nav class="pagination">
-      <!-- Simple pagination could be added here -->
+  {#if total > pageSize}
+    <nav
+      class="pagination"
+      style="display: flex; justify-content: space-between; margin-top: 2rem;"
+    >
+      <button
+        class="button button-secondary"
+        disabled={currentPage === 1}
+        onclick={() => loadPage(currentPage - 1)}
+      >
+        ← {t($uiLanguage, "blog_prev_page")}
+      </button>
+
+      <span style="align-self: center;">
+        {currentPage} / {Math.ceil(total / pageSize)}
+      </span>
+
+      <button
+        class="button button-secondary"
+        disabled={currentPage >= Math.ceil(total / pageSize)}
+        onclick={() => loadPage(currentPage + 1)}
+      >
+        {t($uiLanguage, "blog_next_page")} →
+      </button>
     </nav>
   {/if}
 </div>

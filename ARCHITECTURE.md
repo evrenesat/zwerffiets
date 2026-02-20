@@ -22,6 +22,7 @@ ZwerfFiets is a web-first abandoned-bike reporting platform.
 - Built as static files via `@sveltejs/adapter-static`
 - Uses build-id app directory (`_app_<BUILD_ID>`) for cache-busting
 - Registers a service worker in production
+- Dynamic routes that depend on runtime API data (for example `/blog/[slug]`) opt out of prerendering.
 - Uses `/api/v1/*` for API calls; `/bikeadmin/*` is server-rendered by API
 
 ### Backend (Gin API + SSR admin)

@@ -142,6 +142,15 @@
 
   <footer class="site-footer">
     <div class="footer-inner">
+      <div class="footer-logo">
+        <a
+          href="https://bikekitchennl.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img src="/images/bike-kitchen.png" alt="Bike Kitchen" />
+        </a>
+      </div>
       <p>ZwerfFiets – {t($uiLanguage, "footer_tagline")}</p>
       <nav class="footer-nav">
         <a href="/blog">{t($uiLanguage, "nav_blog")}</a>

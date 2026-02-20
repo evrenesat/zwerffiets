@@ -133,6 +133,23 @@ main {
   flex-wrap: wrap;
 }
 
+.footer-logo {
+  display: flex;
+  align-items: center;
+}
+
+.footer-logo img {
+  height: 4.25rem;
+  width: auto;
+  display: block;
+  opacity: 0.85;
+  transition: opacity 150ms ease;
+}
+
+.footer-logo a:hover img {
+  opacity: 1;
+}
+
 .footer-inner p {
   margin: 0;
   color: var(--fg-muted);

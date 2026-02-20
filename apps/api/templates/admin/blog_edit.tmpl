@@ -27,7 +27,7 @@
 
       <label>
         {{index .Text "blog_published_at_label"}}
-        <input type="datetime-local" name="published_at" value="{{if .Post.PublishedAt}}{{.Post.PublishedAt.Format "2006-01-02T15:04"}}{{end}}" />
+        <input type="datetime-local" name="published_at" id="published-at" value="{{if .Post.PublishedAt}}{{.Post.PublishedAt.Format "2006-01-02T15:04"}}{{end}}" />
       </label>
     </div>
 
@@ -63,6 +63,15 @@ document.addEventListener('DOMContentLoaded', function() {
   form.onsubmit = function() {
     contentInput.value = quill.root.innerHTML;
   };
+
+  // Auto-fill published_at with current local datetime if empty
+  var publishedAtInput = document.querySelector('#published-at');
+  if (publishedAtInput && !publishedAtInput.value) {
+    var now = new Date();
+    // Format to YYYY-MM-DDThh:mm (which datetime-local expects)
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    publishedAtInput.value = now.toISOString().slice(0, 16);
+  }
 
   // Auto-slug from title
   var titleInput = document.querySelector('#blog-title');

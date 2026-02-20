@@ -4,6 +4,60 @@ Internal maintainer notes live here.
 
 Public release highlights are tracked in `CHANGELOG.md`.
 
+## 2026-02-20 - Add Functional Source License (FSL)
+
+### Summary
+
+Added the Functional Source License (FSL-1.1-MIT) to the project.
+
+### What changed and why
+
+- **Root files**:
+  - Created `LICENSE` file containing the FSL-1.1-MIT text to clarify rights and usage restrictions while maintaining future permissive open source availability.
+  - Added a `## License` section to the footer of `README.md` pointing to the new license file.
+
+### Verification
+
+- `bun run test` (frontend checks pass)
+- `bun run api:test` (backend checks pass)
+
+## 2026-02-20 - Add Bike Kitchen Logo to Footer
+
+### Summary
+
+Added the Bike Kitchen logo to the most left side of the global footer.
+
+### What changed and why
+
+- **Frontend (SvelteKit)**:
+  - Updated `apps/web/src/routes/+layout.svelte` to include the `bike-kitchen.png` in `.footer-inner`. Wrapped it in an anchor linking to `https://bikekitchennl.com/`.
+  - Added `.footer-logo` CSS rules in `apps/web/src/lib/styles/layout.css` to size the logo appropriately (4.25rem height) while preserving responsiveness and alignment.
+
+### Verification
+
+- `bun run test` (frontend checks)
+- `bun run api:test` (backend checks)
+
+## 2026-02-20 - Blog route prerender fix for production deploy
+
+### Summary
+
+Fixed production deployment failure caused by SvelteKit prerender trying to crawl dynamic blog slug routes.
+
+### What changed and why
+
+- Added `apps/web/src/routes/blog/[slug]/+page.ts` with:
+  - `export const prerender = false;`
+- This aligns blog detail route behavior with other runtime-only dynamic pages and prevents build-time failure:
+  - `The following routes were marked as prerenderable ... /blog/[slug]`
+
+### Verification
+
+- `bun run --cwd apps/web build`
+- `bun run test`
+- `bun run api:test`
+- `/Users/evren/code/zwerffiets-ops/ops deploy-all` (successful end-to-end deployment + verify playbook)
+
 ## 2026-02-21 - Simple Blogging Feature
 
 ### Summary
