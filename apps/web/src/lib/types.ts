@@ -169,7 +169,7 @@ export interface ReportCreateResponse {
   created_at: string;
   status: ReportStatus;
   tracking_url: string;
-  dedupe_candidates: string[];
+  dedupe_candidates: number[];
   flagged_for_review: boolean;
   bike_group_id: number;
   signal_strength: SignalStrength;
@@ -190,4 +190,21 @@ export interface OperatorReportFilters {
   has_qualifying_reconfirmation?: boolean;
   strong_only?: boolean;
   sort?: 'newest' | 'signal';
+}
+export interface BlogPost {
+  id: number;
+  slug: string;
+  title: string;
+  content_html: string;
+  author_id: number | null;
+  author_name: string;
+  is_published: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaginatedBlogPosts {
+  posts: BlogPost[];
+  total: number;
 }

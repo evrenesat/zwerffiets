@@ -9,6 +9,11 @@
     </label>
 
     <label>
+      {{index .Text "operator_name"}}
+      <input type="text" name="name" value="{{.Name}}" required />
+    </label>
+
+    <label>
       {{index .Text "operator_role"}}
       <select name="role" required>
         {{range .Roles}}

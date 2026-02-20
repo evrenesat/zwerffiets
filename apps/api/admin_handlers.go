@@ -40,6 +40,11 @@ func (a *App) registerAdminRoutes(r *gin.Engine) {
 		admin.GET("/map", a.adminMapPageHandler)
 		admin.GET("/exports", a.adminExportsPageHandler)
 		admin.POST("/exports/generate", a.adminGenerateExportSubmitHandler)
+		admin.GET("/showcase/editor", a.requireRole("admin"), a.adminShowcaseEditorPageHandler)
+		admin.POST("/showcase/editor", a.requireRole("admin"), a.adminShowcaseEditorSubmitHandler)
+
+		admin.GET("/content", a.requireRole("admin"), a.adminContentPageHandler)
+		admin.POST("/content", a.requireRole("admin"), a.adminContentSubmitHandler)
 
 		admin.GET("/reports/:id/edit", a.requireRole("admin"), a.adminReportEditPageHandler)
 		admin.POST("/reports/:id/edit", a.requireRole("admin"), a.adminReportEditSubmitHandler)
@@ -56,6 +61,13 @@ func (a *App) registerAdminRoutes(r *gin.Engine) {
 		admin.GET("/users/:id/edit", a.requireRole("admin"), a.adminUserEditPageHandler)
 		admin.POST("/users/:id/edit", a.requireRole("admin"), a.adminUserEditSubmitHandler)
 		admin.POST("/users/bulk", a.requireRole("admin"), a.adminUsersBulkSubmitHandler)
+
+		admin.GET("/blog", a.requireRole("admin"), a.adminBlogListPageHandler)
+		admin.GET("/blog/new", a.requireRole("admin"), a.adminBlogCreatePageHandler)
+		admin.POST("/blog", a.requireRole("admin"), a.adminBlogSubmitHandler)
+		admin.GET("/blog/:id", a.requireRole("admin"), a.adminBlogEditPageHandler)
+		admin.POST("/blog/:id", a.requireRole("admin"), a.adminBlogSubmitHandler)
+		admin.POST("/blog/media", a.requireRole("admin"), a.adminBlogMediaUploadHandler)
 	}
 }
 
@@ -121,6 +133,136 @@ func (a *App) adminLoginSubmitHandler(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, next)
 }
 
+func (a *App) adminShowcaseEditorPageHandler(c *gin.Context) {
+	photoIDStr := c.Query("photo_id")
+	photoID := 0
+	if photoIDStr != "" {
+		parsed, err := strconv.Atoi(photoIDStr)
+		if err == nil {
+			photoID = parsed
+		}
+	}
+	next := sanitizeAdminRedirectTarget(c.Query("next"))
+
+	showcaseItems, err := a.storeGetShowcaseItems(c.Request.Context())
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to load showcase items")
+		return
+	}
+
+	// Make sure we have exactly 4 items mapped (1 to 4) for the UI
+	// Pad with empty defaults if missing
+	itemsMap := make(map[int]ShowcaseItem)
+	for _, item := range showcaseItems {
+		itemsMap[item.Slot] = item
+	}
+	var paddedItems []ShowcaseItem
+	for slot := 1; slot <= 4; slot++ {
+		if item, exists := itemsMap[slot]; exists {
+			paddedItems = append(paddedItems, item)
+		} else {
+			paddedItems = append(paddedItems, ShowcaseItem{
+				Slot:         slot,
+				Subtitle:     "",
+				FocalX:       50,
+				FocalY:       50,
+				ScalePercent: 100,
+			})
+		}
+	}
+
+	// Note: We need the ReportID for the photo so we can construct a URL or just fetch the photo metadata using photoID directly
+	// Actually, operator photo URL is `/api/v1/operator/reports/:id/photos/:photoID`
+	// Wait, we need the report ID to construct that URL natively.
+	// But `storeGetShowcaseItems` doesn't fetch ReportID.
+	// We can add it, or we can provide a generic way to fetch the photo locally for the editor:
+	// A new endpoint maybe? No, let's just lookup the ReportID from the photoID so we can use existing URL logic.
+	// Wait, we have `getReportPhotoByID` but we only have photoID!
+	// Okay, I'll update store_utils to lookup photo by ID without report ID, or just pass ReportID in query params.
+	// Let's pass ReportID in query params: ?photo_id=123&report_id=456
+	reportIDStr := c.Query("report_id")
+	reportID := 0
+	if reportIDStr != "" {
+		reportID, _ = strconv.Atoi(reportIDStr)
+	}
+
+	newPhotoURL := ""
+	if reportID > 0 && photoID > 0 {
+		newPhotoURL = a.buildOperatorReportPhotoURL(reportID, photoID)
+	}
+
+	for i := range paddedItems {
+		if paddedItems[i].ReportPhotoID > 0 {
+			// Instead of needing report_id for all existing showcase items, we can just use the public endpoint we just created
+			paddedItems[i].StoragePath = fmt.Sprintf("/api/v1/showcase/%d/photo", paddedItems[i].Slot)
+		}
+	}
+
+	showcaseJSON, _ := json.Marshal(paddedItems)
+
+	base := a.adminBaseData(c, "showcase_editor_title", "showcase")
+	data := adminShowcaseEditorViewData{
+		adminBaseViewData: base,
+		BackURL:           next,
+		PhotoID:           photoID,
+		PhotoURL:          newPhotoURL,
+		ShowcaseItems:     paddedItems,
+		ShowcaseJSON:      string(showcaseJSON),
+	}
+
+	a.renderAdminTemplate(c, http.StatusOK, "templates/admin/showcase_editor.tmpl", data)
+}
+
+func (a *App) adminShowcaseEditorSubmitHandler(c *gin.Context) {
+	lang := a.adminLanguageFromRequest(c)
+	next := sanitizeAdminRedirectTarget(c.PostForm("next"))
+
+	photoIDStr := c.PostForm("photo_id")
+	photoID, err := strconv.Atoi(photoIDStr)
+	if err != nil {
+		redirectAdminWithMessage(c, next, "error", adminText(lang, "error_showcase_update_failed"))
+		return
+	}
+
+	slotStr := c.PostForm("slot")
+	slot, err := strconv.Atoi(slotStr)
+	if err != nil || slot < 1 || slot > 4 {
+		redirectAdminWithMessage(c, next, "error", adminText(lang, "error_showcase_update_failed"))
+		return
+	}
+
+	subtitle := strings.TrimSpace(c.PostForm("subtitle"))
+	if subtitle == "" {
+		redirectAdminWithMessage(c, next, "error", adminText(lang, "error_showcase_update_failed"))
+		return
+	}
+
+	focalXStr := c.PostForm("focal_x")
+	focalX, err := strconv.Atoi(focalXStr)
+	if err != nil {
+		focalX = 50
+	}
+	focalYStr := c.PostForm("focal_y")
+	focalY, err := strconv.Atoi(focalYStr)
+	if err != nil {
+		focalY = 50
+	}
+
+	scaleStr := c.PostForm("scale_percent")
+	scalePercent, err := strconv.Atoi(scaleStr)
+	if err != nil {
+		scalePercent = 100
+	}
+
+	if err := a.storeUpsertShowcaseItem(c.Request.Context(), slot, photoID, focalX, focalY, scalePercent, subtitle); err != nil {
+		a.log.Error("failed to update showcase item", "error", err)
+		redirectAdminWithMessage(c, next, "error", adminText(lang, "error_showcase_update_failed"))
+		return
+	}
+
+	baseNext := strings.Split(next, "?")[0]
+	redirectAdminWithMessage(c, baseNext, "notice", adminText(lang, "notice_showcase_updated"))
+}
 func (a *App) adminLogoutSubmitHandler(c *gin.Context) {
 	a.clearOperatorSession(c)
 	c.Redirect(http.StatusSeeOther, "/bikeadmin/login")

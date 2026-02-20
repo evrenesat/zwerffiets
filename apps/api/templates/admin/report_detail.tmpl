@@ -43,9 +43,14 @@
   {{else}}
   <div class="photo-grid" data-photo-gallery>
     {{range $photo := .Photos}}
-    <button type="button" class="photo-button" data-photo-url="{{$photo.URL}}" data-photo-alt="{{$.PublicID}}" aria-label="photo {{$photo.ID}}">
-      <img src="{{$photo.URL}}" alt="{{$.PublicID}}" class="photo-thumb" loading="lazy" />
-    </button>
+    <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: stretch;">
+      <button type="button" class="photo-button" style="width: 100%; aspect-ratio: 1/1;" data-photo-url="{{$photo.URL}}" data-photo-alt="{{$.PublicID}}" aria-label="photo {{$photo.ID}}">
+        <img src="{{$photo.URL}}" alt="{{$.PublicID}}" class="photo-thumb" loading="lazy" />
+      </button>
+      {{if $.IsAdmin}}
+      <a href="/bikeadmin/showcase/editor?photo_id={{$photo.ID}}&report_id={{$.ReportID}}&next={{$.ActionNext}}" class="button" style="text-align: center; padding: 0.25rem; font-size: 0.8rem;">{{index $.Text "report_add_to_showcase"}}</a>
+      {{end}}
+    </div>
     {{end}}
   </div>
 

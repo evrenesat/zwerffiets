@@ -42,9 +42,12 @@ func TestAdminOperatorCreateSubmit_Success(t *testing.T) {
 	app, router := newAdminTestServer(t)
 
 	created := false
-	app.adminCreateOperator = func(ctx context.Context, email, password string, municipality *string) error {
+	app.adminCreateOperator = func(ctx context.Context, email, name, password string, municipality *string) error {
 		if email != "new@example.com" {
 			return errors.New("wrong email")
+		}
+		if name != "New Operator" {
+			return errors.New("wrong name")
 		}
 		if municipality == nil || *municipality != "Amsterdam" {
 			return errors.New("wrong municipality")
@@ -58,6 +61,7 @@ func TestAdminOperatorCreateSubmit_Success(t *testing.T) {
 
 	form := url.Values{}
 	form.Set("email", "new@example.com")
+	form.Set("name", "New Operator")
 	form.Set("password", "secret")
 	form.Set("municipality", "Amsterdam")
 
@@ -171,11 +175,12 @@ func TestAdminOperatorEditSubmit_Success(t *testing.T) {
 
 	muni := "Utrecht"
 	var capturedID int
-	var capturedEmail, capturedRole, capturedPassword string
+	var capturedEmail, capturedName, capturedRole, capturedPassword string
 	var capturedMuni *string
-	app.adminUpdateOperator = func(ctx context.Context, id int, email, role string, municipality *string, password string) error {
+	app.adminUpdateOperator = func(ctx context.Context, id int, email, name, role string, municipality *string, password string) error {
 		capturedID = id
 		capturedEmail = email
+		capturedName = name
 		capturedRole = role
 		capturedMuni = municipality
 		capturedPassword = password
@@ -190,6 +195,7 @@ func TestAdminOperatorEditSubmit_Success(t *testing.T) {
 
 	form := url.Values{}
 	form.Set("email", "new@example.com")
+	form.Set("name", "Updated Name")
 	form.Set("role", "municipality_operator")
 	form.Set("municipality", "Amsterdam")
 	form.Set("password", "")
@@ -210,6 +216,9 @@ func TestAdminOperatorEditSubmit_Success(t *testing.T) {
 	if capturedEmail != "new@example.com" {
 		t.Errorf("wrong email: %s", capturedEmail)
 	}
+	if capturedName != "Updated Name" {
+		t.Errorf("wrong name: %s", capturedName)
+	}
 	if capturedRole != "municipality_operator" {
 		t.Errorf("wrong role: %s", capturedRole)
 	}
@@ -226,7 +235,7 @@ func TestAdminOperatorEditSubmit_PasswordChange(t *testing.T) {
 
 	muni := "Utrecht"
 	var capturedPassword string
-	app.adminUpdateOperator = func(ctx context.Context, id int, email, role string, municipality *string, password string) error {
+	app.adminUpdateOperator = func(ctx context.Context, id int, email, name, role string, municipality *string, password string) error {
 		capturedPassword = password
 		return nil
 	}
@@ -239,6 +248,7 @@ func TestAdminOperatorEditSubmit_PasswordChange(t *testing.T) {
 
 	form := url.Values{}
 	form.Set("email", "old@example.com")
+	form.Set("name", "Some Name")
 	form.Set("role", "municipality_operator")
 	form.Set("municipality", "Utrecht")
 	form.Set("password", "newpassword123")
@@ -259,7 +269,7 @@ func TestAdminOperatorEditSubmit_InvalidMunicipality(t *testing.T) {
 	app, router := newAdminTestServer(t)
 
 	updateCalled := false
-	app.adminUpdateOperator = func(ctx context.Context, id int, email, role string, municipality *string, password string) error {
+	app.adminUpdateOperator = func(ctx context.Context, id int, email, name, role string, municipality *string, password string) error {
 		updateCalled = true
 		return nil
 	}
@@ -272,6 +282,7 @@ func TestAdminOperatorEditSubmit_InvalidMunicipality(t *testing.T) {
 
 	form := url.Values{}
 	form.Set("email", "op@example.com")
+	form.Set("name", "Some Name")
 	form.Set("role", "municipality_operator")
 	form.Set("municipality", "NotARealMunicipality")
 	form.Set("password", "")

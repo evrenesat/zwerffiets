@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
   import { PUBLIC_BASE_URL, PUBLIC_FB_APP_ID } from "$env/static/public";
   import { derived } from "svelte/store";
-  import { t, uiLanguage } from "$lib/i18n";
+  import { t, uiLanguage, loadDynamicContent } from "$lib/i18n";
   import { layoutNavVariant } from "$lib/client/layout-nav";
   import {
     isUserSessionOk,
@@ -86,6 +86,7 @@
     document.documentElement.classList.remove("lang-switching");
     void registerServiceWorker();
     void refreshUserSessionState();
+    void loadDynamicContent();
   });
 </script>
 
@@ -116,6 +117,7 @@
       {:else if $navVariant === "report"}
         <a href="/my-reports">{t($uiLanguage, "nav_my_reports")}</a>
       {:else}
+        <a href="/blog">{t($uiLanguage, "nav_blog")}</a>
         <a href="/report">{t($uiLanguage, "nav_report")}</a>
         <a href="/my-reports">{t($uiLanguage, "nav_my_reports")}</a>
       {/if}

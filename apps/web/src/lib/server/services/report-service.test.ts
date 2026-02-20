@@ -160,7 +160,7 @@ describe('report service', () => {
     expect(report).toBeDefined();
 
     await expect(
-      updateReportStatus(report!.id, 'resolved', {
+      updateReportStatus(Number(report!.id), 'resolved', {
         email: 'operator@zwerffiets.local',
         role: 'operator'
       })
@@ -187,9 +187,9 @@ describe('report service', () => {
       { email: 'operator@zwerffiets.local', role: 'operator' }
     );
 
-    const csvAsset = await getExportAsset(batch.id, 'csv');
-    const geoAsset = await getExportAsset(batch.id, 'geojson');
-    const pdfAsset = await getExportAsset(batch.id, 'pdf');
+    const csvAsset = await getExportAsset(Number(batch.id), 'csv');
+    const geoAsset = await getExportAsset(Number(batch.id), 'geojson');
+    const pdfAsset = await getExportAsset(Number(batch.id), 'pdf');
 
     expect(csvAsset.contentType).toContain('text/csv');
     expect(String(csvAsset.body)).toContain('report_id');

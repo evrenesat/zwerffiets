@@ -1,0 +1,49 @@
+{{define "content"}}
+<div class="header-row">
+  <h1>{{index .Text "page_title_content"}}</h1>
+</div>
+
+<div class="card p-0">
+  {{if not .Contents}}
+    <div class="empty-state">
+      {{index .Text "triage_empty"}}
+    </div>
+  {{else}}
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th style="width: 35%;">Nederlands</th>
+          <th style="width: 35%;">English</th>
+          <th>Updated</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Contents}}
+        <tr id="row-{{.Key}}">
+          <form method="POST" action="/bikeadmin/content">
+            <input type="hidden" name="key" value="{{.Key}}">
+            <td><code>{{.Key}}</code></td>
+            <td>
+              <textarea name="nl_text" class="input" rows="3" style="width: 100%; resize: vertical;">{{.NlText}}</textarea>
+            </td>
+            <td>
+              <textarea name="en_text" class="input" rows="3" style="width: 100%; resize: vertical;">{{.EnText}}</textarea>
+            </td>
+            <td>
+              <span class="text-sm text-muted">{{.Updated}}</span>
+            </td>
+            <td>
+              <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            </td>
+          </form>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+  {{end}}
+</div>
+{{end}}

@@ -142,7 +142,7 @@ export const buildExportArtifacts = async (
     if (byDate !== 0) {
       return byDate;
     }
-    return left.id.localeCompare(right.id);
+    return left.id - right.id;
   });
 
   return {

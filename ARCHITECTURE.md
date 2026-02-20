@@ -4,7 +4,7 @@
 
 ZwerfFiets is a web-first abandoned-bike reporting platform.
 
-- Public UX: static SvelteKit app (`/`, `/report`, `/login`, `/my-reports`, `/report/status/*`)
+- Public UX: static SvelteKit app (`/`, `/report`, `/login`, `/my-reports`, `/blog`, `/report/status/*`)
 - Admin UX: Gin-rendered HTML workspace (`/bikeadmin/*`)
 - API: Gin JSON endpoints under `/api/v1/*`
 - Storage: PostgreSQL + filesystem (`DATA_ROOT`) for photos/exports
@@ -41,6 +41,7 @@ ZwerfFiets is a web-first abandoned-bike reporting platform.
 - Filesystem under `DATA_ROOT` stores:
   - `uploads/reports/<report_id>/<random_filename>.<ext>`
   - `exports/*`
+  - `uploads/blog/*` (for blog media)
 
 ## Reverse Proxy Contract (Production)
 
@@ -82,9 +83,14 @@ This repo does not ship production infra configs, but the runtime contract is:
 ### Photo Delivery
 
 - Operator photos are requested via `/api/v1/operator/reports/:id/photos/:photoID`
-- Handler always performs auth/scope checks first
-- Production: returns `X-Accel-Redirect` to `/_protected_media/...`
-- Development: Gin reads and streams file directly
+  - Handler always performs auth/scope checks first
+  - Production: returns `X-Accel-Redirect` to `/_protected_media/...`
+  - Development: Gin reads and streams file directly
+- Public showcase photos are served via `/api/v1/showcase/:slot/photo`
+  - Unauthenticated, but strictly limits access to explicitly configured showcase images.
+  - Production delivery mechanism is identical to operator photos (`X-Accel-Redirect`).
+- Public blog media are served via `/api/v1/blog/media/:filename`
+  - Served directly from `DATA_ROOT/blog` (local) or via `X-Accel-Redirect` (production).
 - Legacy compatibility: extensionless stored paths are resolved via on-disk `.*` fallback
 
 ## Business Rules

@@ -1,0 +1,121 @@
+{{define "content"}}
+<section class="card">
+  <h1>{{if .IsNew}}{{index .Text "page_title_blog_new"}}{{else}}{{index .Text "page_title_blog_edit"}}{{end}}</h1>
+
+  <form method="post" action="{{if .IsNew}}/bikeadmin/blog{{else}}/bikeadmin/blog/{{.Post.ID}}{{end}}" class="stack-form" id="blog-form">
+    <label>
+      {{index .Text "blog_title_label"}}
+      <input type="text" name="title" value="{{.Post.Title}}" required id="blog-title" />
+    </label>
+
+    <label>
+      {{index .Text "blog_slug_label"}}
+      <input type="text" name="slug" value="{{.Post.Slug}}" required id="blog-slug" />
+    </label>
+
+    <div class="editor-container">
+      <label>{{index .Text "blog_content_label"}}</label>
+      <div id="editor" style="height: 400px; background: white; color: black;">{{if .Post.ContentHTML}}{{.Post.ContentHTML | safe}}{{end}}</div>
+      <input type="hidden" name="content_html" id="content-html" value="{{.Post.ContentHTML}}" />
+    </div>
+
+    <div style="display: flex; gap: 2rem; align-items: center; margin-top: 1rem;">
+      <label class="checkbox-label">
+        <input type="checkbox" name="is_published" value="true" {{if .Post.IsPublished}}checked{{end}} id="is-published" />
+        {{index .Text "blog_publish_label"}}
+      </label>
+
+      <label>
+        {{index .Text "blog_published_at_label"}}
+        <input type="datetime-local" name="published_at" value="{{if .Post.PublishedAt}}{{.Post.PublishedAt.Format "2006-01-02T15:04"}}{{end}}" />
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="button">{{index .Text "blog_save_button"}}</button>
+      <a href="{{.BackURL}}" class="button button-secondary">{{index .Text "ui_cancel"}}</a>
+    </div>
+  </form>
+</section>
+
+<!-- Quill JS via CDN -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+      toolbar: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        ['link', 'image', 'video'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['clean']
+      ]
+    }
+  });
+
+  var form = document.querySelector('#blog-form');
+  var contentInput = document.querySelector('#content-html');
+
+  form.onsubmit = function() {
+    contentInput.value = quill.root.innerHTML;
+  };
+
+  // Auto-slug from title
+  var titleInput = document.querySelector('#blog-title');
+  var slugInput = document.querySelector('#blog-slug');
+  if (titleInput && slugInput && !slugInput.value) {
+    titleInput.addEventListener('input', function() {
+      var slug = titleInput.value.toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      slugInput.value = slug;
+    });
+  }
+
+  // Handle image upload
+  quill.getModule('toolbar').addHandler('image', function() {
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = function() {
+      var file = input.files[0];
+      if (/^image\//.test(file.type)) {
+        uploadImage(file);
+      } else {
+        console.warn('You can only upload images');
+      }
+    };
+  });
+
+  function uploadImage(file) {
+    var formData = new FormData();
+    formData.append('image', file);
+
+    fetch('/bikeadmin/blog/media', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+      if (result.url) {
+        var range = quill.getSelection();
+        quill.insertEmbed(range.index, 'image', result.url);
+      } else {
+        alert('Upload failed');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Upload error');
+    });
+  }
+});
+</script>
+{{end}}

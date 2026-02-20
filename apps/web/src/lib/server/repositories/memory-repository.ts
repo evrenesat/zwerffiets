@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+
 import { OPEN_REPORT_STATUSES } from '$lib/constants';
 import type {
   BikeGroup,
@@ -29,17 +30,17 @@ export class MemoryRepository implements Repository {
   private bikeGroups: BikeGroup[] = [];
 
   constructor() {
-    this.tags = DEFAULT_TAGS.map((tag) => ({ ...tag, id: randomUUID() }));
+    this.tags = DEFAULT_TAGS.map((tag) => ({ ...tag, id: Date.now() + Math.floor(Math.random() * 100000) }));
   }
 
   async getTags(): Promise<Tag[]> {
     return [...this.tags];
   }
 
-  async createReport(payload: CreateReportPayload & { bikeGroupId: string }): Promise<Report> {
+  async createReport(payload: CreateReportPayload & { bikeGroupId: number }): Promise<Report> {
     const nowIso = new Date().toISOString();
     const report: Report = {
-      id: randomUUID(),
+      id: Date.now() + Math.floor(Math.random() * 100000),
       publicId: randomUUID().slice(0, 8).toUpperCase(),
       createdAt: nowIso,
       updatedAt: nowIso,
@@ -60,10 +61,10 @@ export class MemoryRepository implements Repository {
     return report;
   }
 
-  async saveReportPhotos(reportId: string, photos: CreateReportPayload['photos']): Promise<ReportPhoto[]> {
+  async saveReportPhotos(reportId: number, photos: CreateReportPayload['photos']): Promise<ReportPhoto[]> {
     const createdAt = new Date().toISOString();
     const reportPhotos = photos.map((photo) => ({
-      id: randomUUID(),
+      id: Date.now() + Math.floor(Math.random() * 100000),
       reportId,
       createdAt,
       mimeType: photo.mimeType,
@@ -79,7 +80,7 @@ export class MemoryRepository implements Repository {
     return this.reports.find((report) => report.publicId === publicId) ?? null;
   }
 
-  async getReportById(id: string): Promise<Report | null> {
+  async getReportById(id: number): Promise<Report | null> {
     return this.reports.find((report) => report.id === id) ?? null;
   }
 
@@ -111,7 +112,7 @@ export class MemoryRepository implements Repository {
     return this.reports.filter((report) => report.createdAt >= sinceIso);
   }
 
-  async listReportsByBikeGroupId(bikeGroupId: string): Promise<Report[]> {
+  async listReportsByBikeGroupId(bikeGroupId: number): Promise<Report[]> {
     return this.reports
       .filter((report) => report.bikeGroupId === bikeGroupId)
       .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
@@ -126,7 +127,7 @@ export class MemoryRepository implements Repository {
   }
 
   async updateReportStatus(
-    reportId: string,
+    reportId: number,
     nextStatus: ReportStatus,
     actor: string
   ): Promise<Report | null> {
@@ -153,14 +154,14 @@ export class MemoryRepository implements Repository {
   }
 
   async mergeReports(
-    canonicalReportId: string,
-    duplicateReportIds: string[],
+    canonicalReportId: number,
+    duplicateReportIds: number[],
     actor: string
   ): Promise<DedupeGroup> {
     const existingGroup = this.dedupeGroups.find((group) => group.canonicalReportId === canonicalReportId);
     const group: DedupeGroup =
       existingGroup ?? {
-        id: randomUUID(),
+        id: Date.now() + Math.floor(Math.random() * 100000),
         canonicalReportId,
         mergedReportIds: [],
         createdAt: new Date().toISOString(),
@@ -168,7 +169,7 @@ export class MemoryRepository implements Repository {
       };
 
     const mergedSet = new Set([...group.mergedReportIds, ...duplicateReportIds]);
-    group.mergedReportIds = [...mergedSet];
+    group.mergedReportIds = Array.from(mergedSet) as unknown as number[];
 
     if (!existingGroup) {
       this.dedupeGroups.push(group);
@@ -196,7 +197,7 @@ export class MemoryRepository implements Repository {
   async addEvent(event: Omit<ReportEvent, 'id' | 'createdAt'>): Promise<ReportEvent> {
     const entity: ReportEvent = {
       ...event,
-      id: randomUUID(),
+      id: Date.now() + Math.floor(Math.random() * 100000),
       createdAt: new Date().toISOString()
     };
 
@@ -204,7 +205,7 @@ export class MemoryRepository implements Repository {
     return entity;
   }
 
-  async listEvents(reportId: string): Promise<ReportEvent[]> {
+  async listEvents(reportId: number): Promise<ReportEvent[]> {
     return this.events
       .filter((event) => event.reportId === reportId)
       .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
@@ -213,7 +214,7 @@ export class MemoryRepository implements Repository {
   async createExportBatch(batch: Omit<ExportBatch, 'id' | 'generatedAt'>): Promise<ExportBatch> {
     const entity: ExportBatch = {
       ...batch,
-      id: randomUUID(),
+      id: Date.now() + Math.floor(Math.random() * 100000),
       generatedAt: new Date().toISOString()
     };
 
@@ -221,7 +222,7 @@ export class MemoryRepository implements Repository {
     return entity;
   }
 
-  async getExportBatch(exportId: string): Promise<ExportBatch | null> {
+  async getExportBatch(exportId: number): Promise<ExportBatch | null> {
     return this.exportBatches.find((batch) => batch.id === exportId) ?? null;
   }
 
@@ -231,11 +232,11 @@ export class MemoryRepository implements Repository {
     );
   }
 
-  async listPhotos(reportId: string): Promise<ReportPhoto[]> {
+  async listPhotos(reportId: number): Promise<ReportPhoto[]> {
     return this.photos.filter((photo) => photo.reportId === reportId);
   }
 
-  async setFlaggedForReview(reportId: string, flagged: boolean): Promise<void> {
+  async setFlaggedForReview(reportId: number, flagged: boolean): Promise<void> {
     this.reports = this.reports.map((report) => {
       if (report.id !== reportId) {
         return report;
@@ -252,7 +253,7 @@ export class MemoryRepository implements Repository {
   async createBikeGroup(anchor: Report['location']): Promise<BikeGroup> {
     const nowIso = new Date().toISOString();
     const group: BikeGroup = {
-      id: randomUUID(),
+      id: Date.now() + Math.floor(Math.random() * 100000),
       createdAt: nowIso,
       updatedAt: nowIso,
       anchorLat: anchor.lat,
@@ -271,7 +272,7 @@ export class MemoryRepository implements Repository {
     return group;
   }
 
-  async getBikeGroupById(groupId: string): Promise<BikeGroup | null> {
+  async getBikeGroupById(groupId: number): Promise<BikeGroup | null> {
     return this.bikeGroups.find((group) => group.id === groupId) ?? null;
   }
 

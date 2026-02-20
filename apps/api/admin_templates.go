@@ -30,7 +30,11 @@ func (r *adminTemplateRenderer) templatesForRender(contentTemplatePath string) (
 		sourceFS = adminAssetsFS
 	}
 
-	templates, err := template.ParseFS(sourceFS, "templates/admin/layout.tmpl", contentTemplatePath)
+	templates, err := template.New("layout.tmpl").Funcs(template.FuncMap{
+		"safe": func(s string) template.HTML {
+			return template.HTML(s)
+		},
+	}).ParseFS(sourceFS, "templates/admin/layout.tmpl", contentTemplatePath)
 	if err != nil {
 		return nil, fmt.Errorf("parse admin templates: %w", err)
 	}

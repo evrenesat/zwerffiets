@@ -5,12 +5,22 @@
   <form method="post" action="/bikeadmin/operators" class="stack-form">
     <label>
       {{index .Text "operator_email"}}
-      <input type="email" name="email" required autocomplete="off" />
+      <input type="email" name="email" value="{{.Email}}" required autocomplete="off" />
+    </label>
+
+    <label>
+      {{index .Text "operator_name"}}
+      <input type="text" name="name" value="{{.Name}}" required />
     </label>
 
     <label>
       {{index .Text "operator_password"}}
       <input type="password" name="password" required autocomplete="new-password" />
+    </label>
+
+    <label>
+      {{index .Text "operator_name"}}
+      <input type="text" name="name" required />
     </label>
 
     <label>

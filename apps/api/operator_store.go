@@ -13,6 +13,7 @@ import (
 type Operator struct {
 	ID                   int     `json:"id"`
 	Email                string  `json:"email"`
+	Name                 string  `json:"name"`
 	Role                 string  `json:"role"`
 	Municipality         *string `json:"municipality"`
 	IsActive             bool    `json:"is_active"`
@@ -24,7 +25,7 @@ type Operator struct {
 
 func (a *App) storeAdminListOperators(ctx context.Context) ([]Operator, error) {
 	rows, err := a.db.QueryContext(ctx, `
-		SELECT id, email, role, municipality, is_active, receives_reports, unsubscribe_requested, created_at, updated_at
+		SELECT id, email, name, role, municipality, is_active, receives_reports, unsubscribe_requested, created_at, updated_at
 		FROM operators
 		ORDER BY created_at DESC
 	`)
@@ -41,6 +42,7 @@ func (a *App) storeAdminListOperators(ctx context.Context) ([]Operator, error) {
 		if err := rows.Scan(
 			&op.ID,
 			&op.Email,
+			&op.Name,
 			&op.Role,
 			&mun,
 			&op.IsActive,
@@ -62,7 +64,7 @@ func (a *App) storeAdminListOperators(ctx context.Context) ([]Operator, error) {
 	return operators, rows.Err()
 }
 
-func (a *App) storeAdminCreateOperator(ctx context.Context, email, password string, municipality *string) error {
+func (a *App) storeAdminCreateOperator(ctx context.Context, email, name, password string, municipality *string) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -73,9 +75,9 @@ func (a *App) storeAdminCreateOperator(ctx context.Context, email, password stri
 	}
 
 	_, err = a.db.ExecContext(ctx, `
-		INSERT INTO operators (email, password_hash, role, municipality, is_active)
-		VALUES ($1, $2, $3, $4, true)
-	`, email, string(hash), role, municipality)
+		INSERT INTO operators (email, name, password_hash, role, municipality, is_active)
+		VALUES ($1, $2, $3, $4, $5, true)
+	`, email, name, string(hash), role, municipality)
 	return err
 }
 
@@ -90,7 +92,7 @@ func (a *App) storeAdminToggleOperatorStatus(ctx context.Context, id int) (bool,
 	return isActive, err
 }
 
-func (a *App) storeAdminUpdateOperator(ctx context.Context, id int, email, role string, municipality *string, password string) error {
+func (a *App) storeAdminUpdateOperator(ctx context.Context, id int, email, name, role string, municipality *string, password string) error {
 	if password != "" {
 		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
@@ -98,16 +100,16 @@ func (a *App) storeAdminUpdateOperator(ctx context.Context, id int, email, role 
 		}
 		_, err = a.db.ExecContext(ctx, `
 			UPDATE operators
-			SET email = $2, role = $3, municipality = $4, password_hash = $5, updated_at = NOW()
+			SET email = $2, name = $3, role = $4, municipality = $5, password_hash = $6, updated_at = NOW()
 			WHERE id = $1
-		`, id, email, role, municipality, string(hash))
+		`, id, email, name, role, municipality, string(hash))
 		return err
 	}
 	_, err := a.db.ExecContext(ctx, `
 		UPDATE operators
-		SET email = $2, role = $3, municipality = $4, updated_at = NOW()
+		SET email = $2, name = $3, role = $4, municipality = $5, updated_at = NOW()
 		WHERE id = $1
-	`, id, email, role, municipality)
+	`, id, email, name, role, municipality)
 	return err
 }
 
@@ -116,11 +118,12 @@ func (a *App) storeAdminGetOperatorByID(ctx context.Context, id int) (*Operator,
 	var createdAt, updatedAt time.Time
 	var mun sql.NullString
 	err := a.db.QueryRowContext(ctx, `
-		SELECT id, email, role, municipality, is_active, receives_reports, unsubscribe_requested, created_at, updated_at
+		SELECT id, email, name, role, municipality, is_active, receives_reports, unsubscribe_requested, created_at, updated_at
 		FROM operators WHERE id = $1
 	`, id).Scan(
 		&op.ID,
 		&op.Email,
+		&op.Name,
 		&op.Role,
 		&mun,
 		&op.IsActive,
@@ -207,7 +210,7 @@ func (a *App) storeCreateSeedOperator(ctx context.Context, municipality string) 
 
 func (a *App) storeListReportRecipientOperators(ctx context.Context) ([]Operator, error) {
 	rows, err := a.db.QueryContext(ctx, `
-		SELECT id, email, role, municipality, is_active, receives_reports, unsubscribe_requested, created_at, updated_at
+		SELECT id, email, name, role, municipality, is_active, receives_reports, unsubscribe_requested, created_at, updated_at
 		FROM operators
 		WHERE receives_reports = true AND is_active = true AND email NOT LIKE 'gemeente-%'
 	`)
@@ -223,6 +226,7 @@ func (a *App) storeListReportRecipientOperators(ctx context.Context) ([]Operator
 		if err := rows.Scan(
 			&op.ID,
 			&op.Email,
+			&op.Name,
 			&op.Role,
 			&mun,
 			&op.IsActive,
@@ -294,4 +298,24 @@ func (a *App) storeToggleReceivesReports(ctx context.Context, id int) (bool, err
 		RETURNING receives_reports
 	`, id).Scan(&newValue)
 	return newValue, err
+}
+func (a *App) storeAdminGetOperatorByEmail(ctx context.Context, email string) (*Operator, error) {
+	var op Operator
+	var mun sql.NullString
+	err := a.db.QueryRowContext(ctx, `
+		SELECT id, email, name, role, municipality, is_active, receives_reports, unsubscribe_requested, created_at, updated_at
+		FROM operators
+		WHERE email = $1
+	`, email).Scan(
+		&op.ID, &op.Email, &op.Name, &op.Role, &mun,
+		&op.IsActive, &op.ReceivesReports, &op.UnsubscribeRequested,
+		&op.CreatedAt, &op.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if mun.Valid {
+		op.Municipality = &mun.String
+	}
+	return &op, nil
 }

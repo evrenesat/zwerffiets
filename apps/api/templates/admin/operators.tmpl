@@ -10,6 +10,7 @@
       <thead>
         <tr>
           <th>{{index .Text "operator_email"}}</th>
+          <th>{{index .Text "operator_name"}}</th>
           <th>{{index .Text "operator_role"}}</th>
           <th>{{index .Text "operator_municipality"}}</th>
           <th>{{index .Text "operator_status"}}</th>
@@ -22,6 +23,7 @@
         {{range .Operators}}
         <tr>
           <td>{{.Email}}</td>
+          <td>{{.Name}}</td>
           <td>{{index $.Text (printf "role_%s" .Role)}}</td>
           <td>{{if .Municipality}}{{.Municipality}}{{else}}-{{end}}</td>
           <td>

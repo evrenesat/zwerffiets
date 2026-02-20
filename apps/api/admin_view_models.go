@@ -137,6 +137,19 @@ var (
 			"signal_none":                            "Geen",
 			"signal_weak_same_reporter":              "Zwak (zelfde melder)",
 			"signal_strong_distinct_reporters":       "Sterk (andere melders)",
+			"report_add_to_showcase":                 "Aan showcase toevoegen",
+			"showcase_editor_title":                  "Showcase-editor",
+			"showcase_slot":                          "Positie (1-4)",
+			"showcase_subtitle":                      "Ondertitel",
+			"showcase_scale":                         "Zoom",
+			"showcase_save":                          "Opslaan",
+			"nav_showcase":                           "Showcase",
+			"notice_showcase_updated":                "Showcase bijgewerkt.",
+			"error_showcase_update_failed":           "Showcase bijwerken is mislukt.",
+			"page_title_content":                     "Inhoudsbeheer",
+			"nav_content":                            "Inhoud",
+			"notice_content_updated":                 "Inhoud succesvol bijgewerkt.",
+			"error_content_update_failed":            "Inhoud bijwerken is mislukt.",
 			"event_created":                          "Aangemaakt",
 			"event_status_changed":                   "Status gewijzigd",
 			"event_merged":                           "Samengevoegd",
@@ -207,6 +220,28 @@ var (
 			"error_bulk_operation_failed":    "Bulk-bewerking mislukt.",
 			"user_confirm_delete":            "Weet je zeker dat je de geselecteerde gebruikers wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
 			"action_delete":                  "Verwijderen",
+			"nav_blog":                       "Blog",
+			"page_title_blog":                "Blogoverzicht",
+			"page_title_blog_new":            "Nieuw blogbericht",
+			"page_title_blog_edit":           "Blogbericht bewerken",
+			"blog_create_button":             "Nieuw bericht",
+			"blog_col_title":                 "Titel",
+			"blog_col_author":                "Auteur",
+			"blog_col_status":                "Status",
+			"blog_col_published_at":          "Gepubliceerd op",
+			"blog_title_label":               "Titel",
+			"blog_slug_label":                "Slug (URL onderdeel)",
+			"blog_content_label":             "Inhoud",
+			"blog_publish_label":             "Gepubliceerd",
+			"blog_published_at_label":        "Publicatiedatum",
+			"blog_save_button":               "Opslaan",
+			"notice_blog_created":            "Blogbericht aangemaakt.",
+			"notice_blog_updated":            "Blogbericht bijgewerkt.",
+			"error_blog_load_failed":         "Laden van blogbericht(en) mislukt.",
+			"error_blog_update_failed":       "Bijwerken van blogbericht mislukt.",
+			"error_blog_media_upload_failed": "Uploaden van media mislukt.",
+			"status_published":               "Gepubliceerd",
+			"status_draft":                   "Concept",
 		},
 		"en": {
 			"app_title":                              "ZwerfFiets Admin",
@@ -320,6 +355,19 @@ var (
 			"signal_none":                            "None",
 			"signal_weak_same_reporter":              "Weak (same reporter)",
 			"signal_strong_distinct_reporters":       "Strong (distinct reporters)",
+			"report_add_to_showcase":                 "Add to showcase",
+			"showcase_editor_title":                  "Showcase Editor",
+			"showcase_slot":                          "Slot (1-4)",
+			"showcase_subtitle":                      "Subtitle",
+			"showcase_scale":                         "Zoom",
+			"showcase_save":                          "Save",
+			"nav_showcase":                           "Showcase",
+			"notice_showcase_updated":                "Showcase updated.",
+			"error_showcase_update_failed":           "Failed to update showcase.",
+			"page_title_content":                     "Content Management",
+			"nav_content":                            "Content",
+			"notice_content_updated":                 "Content updated successfully.",
+			"error_content_update_failed":            "Failed to update content.",
 			"event_created":                          "Created",
 			"event_status_changed":                   "Status changed",
 			"event_merged":                           "Merged",
@@ -390,6 +438,28 @@ var (
 			"error_bulk_operation_failed":    "Bulk operation failed.",
 			"user_confirm_delete":            "Are you sure you want to delete the selected users? This action cannot be undone.",
 			"action_delete":                  "Delete",
+			"nav_blog":                       "Blog",
+			"page_title_blog":                "Blog Overview",
+			"page_title_blog_new":            "New Blog Post",
+			"page_title_blog_edit":           "Edit Blog Post",
+			"blog_create_button":             "New Post",
+			"blog_col_title":                 "Title",
+			"blog_col_author":                "Author",
+			"blog_col_status":                "Status",
+			"blog_col_published_at":          "Published At",
+			"blog_title_label":               "Title",
+			"blog_slug_label":                "Slug",
+			"blog_content_label":             "Content",
+			"blog_publish_label":             "Published",
+			"blog_published_at_label":        "Publication Date",
+			"blog_save_button":               "Save",
+			"notice_blog_created":            "Blog post created.",
+			"notice_blog_updated":            "Blog post updated.",
+			"error_blog_load_failed":         "Failed to load blog post(s).",
+			"error_blog_update_failed":       "Failed to update blog post.",
+			"error_blog_media_upload_failed": "Media upload failed.",
+			"status_published":               "Published",
+			"status_draft":                   "Draft",
 		},
 	}
 
@@ -596,4 +666,25 @@ type adminReportFilters struct {
 	HasQualifyingReconfirmation string
 	StrongOnly                  string
 	Sort                        string
+}
+
+type adminShowcaseEditorViewData struct {
+	adminBaseViewData
+	BackURL       string
+	PhotoID       int
+	PhotoURL      string
+	ShowcaseItems []ShowcaseItem
+	ShowcaseJSON  string
+}
+
+type adminBlogListViewData struct {
+	adminBaseViewData
+	Posts []BlogPost
+}
+
+type adminBlogEditViewData struct {
+	adminBaseViewData
+	Post    *BlogPost
+	IsNew   bool
+	BackURL string
 }

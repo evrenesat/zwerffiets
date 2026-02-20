@@ -39,7 +39,7 @@ const recencyScore = (createdAtIso: string, nowIso: string): number => {
 };
 
 export interface DedupeCandidate {
-  reportId: string;
+  reportId: number;
   score: number;
   distanceMeters: number;
 }

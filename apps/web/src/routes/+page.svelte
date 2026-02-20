@@ -1,8 +1,65 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { PUBLIC_BASE_URL } from "$env/static/public";
   import { t, uiLanguage } from "$lib/i18n";
   import BrandMark from "$lib/components/BrandMark.svelte";
   import "$lib/styles/landing.css";
+
+  interface ShowcaseItem {
+    slot: number;
+    subtitle: string;
+    focalX: number;
+    focalY: number;
+    scalePercent: number;
+    photoUrl: string;
+  }
+
+  let showcaseItems: Record<number, ShowcaseItem> = {};
+
+  onMount(async () => {
+    try {
+      const res = await fetch("/api/v1/showcase");
+      if (res.ok) {
+        const data = await res.json();
+        const items: ShowcaseItem[] = data.items || [];
+        showcaseItems = items.reduce(
+          (acc: Record<number, ShowcaseItem>, item: ShowcaseItem) => {
+            acc[item.slot] = item;
+            return acc;
+          },
+          {},
+        );
+      }
+    } catch (e) {
+      console.error("Failed to load showcase items", e);
+    }
+  });
+
+  const defaultImages: Record<
+    number,
+    { src: string; altKey: string; captionKey: string }
+  > = {
+    1: {
+      src: "/images/stray-bike-1.jpg",
+      altKey: "landing_showcase_fig1_alt",
+      captionKey: "landing_showcase_fig1_caption",
+    },
+    2: {
+      src: "/images/stray-bike-2.jpg",
+      altKey: "landing_showcase_fig2_alt",
+      captionKey: "landing_showcase_fig2_caption",
+    },
+    3: {
+      src: "/images/stray-bike-3.jpg",
+      altKey: "landing_showcase_fig3_alt",
+      captionKey: "landing_showcase_fig3_caption",
+    },
+    4: {
+      src: "/images/stray-bike-4.jpg",
+      altKey: "landing_showcase_fig4_alt",
+      captionKey: "landing_showcase_fig4_caption",
+    },
+  };
 </script>
 
 <svelte:head>
@@ -92,42 +149,33 @@
         <p class="showcase-desc">{t($uiLanguage, "landing_showcase_desc")}</p>
       </div>
       <div class="showcase-grid">
-        <figure class="showcase-figure">
-          <img
-            src="/images/stray-bike-1.jpg"
-            alt={t($uiLanguage, "landing_showcase_fig1_alt")}
-          />
-          <figcaption>
-            {t($uiLanguage, "landing_showcase_fig1_caption")}
-          </figcaption>
-        </figure>
-        <figure class="showcase-figure">
-          <img
-            src="/images/stray-bike-2.jpg"
-            alt={t($uiLanguage, "landing_showcase_fig2_alt")}
-          />
-          <figcaption>
-            {t($uiLanguage, "landing_showcase_fig2_caption")}
-          </figcaption>
-        </figure>
-        <figure class="showcase-figure">
-          <img
-            src="/images/stray-bike-3.jpg"
-            alt={t($uiLanguage, "landing_showcase_fig3_alt")}
-          />
-          <figcaption>
-            {t($uiLanguage, "landing_showcase_fig3_caption")}
-          </figcaption>
-        </figure>
-        <figure class="showcase-figure">
-          <img
-            src="/images/stray-bike-4.jpg"
-            alt={t($uiLanguage, "landing_showcase_fig4_alt")}
-          />
-          <figcaption>
-            {t($uiLanguage, "landing_showcase_fig4_caption")}
-          </figcaption>
-        </figure>
+        {#each [1, 2, 3, 4] as slot}
+          {#if showcaseItems[slot]}
+            <figure class="showcase-figure">
+              <img
+                src={showcaseItems[slot].photoUrl}
+                alt={showcaseItems[slot].subtitle}
+                style="object-fit: cover; object-position: {showcaseItems[slot]
+                  .focalX}% {showcaseItems[slot]
+                  .focalY}%; transform-origin: {showcaseItems[slot]
+                  .focalX}% {showcaseItems[slot]
+                  .focalY}%; transform: scale({(showcaseItems[slot]
+                  .scalePercent || 100) / 100});"
+              />
+              <figcaption>{showcaseItems[slot].subtitle}</figcaption>
+            </figure>
+          {:else}
+            <figure class="showcase-figure">
+              <img
+                src={defaultImages[slot].src}
+                alt={t($uiLanguage, defaultImages[slot].altKey)}
+              />
+              <figcaption>
+                {t($uiLanguage, defaultImages[slot].captionKey)}
+              </figcaption>
+            </figure>
+          {/if}
+        {/each}
       </div>
       <div class="showcase-cta card">
         <div class="cta-content">

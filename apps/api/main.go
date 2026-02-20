@@ -145,10 +145,10 @@ type App struct {
 	adminGenerateExport       func(ctx context.Context, input map[string]any, session OperatorSession) (*ExportBatch, error)
 
 	adminListOperators        func(ctx context.Context) ([]Operator, error)
-	adminCreateOperator       func(ctx context.Context, email, password string, municipality *string) error
+	adminCreateOperator       func(ctx context.Context, email, name, password string, municipality *string) error
 	adminToggleOperatorStatus func(ctx context.Context, id int) (bool, error)
 	adminGetOperatorByID      func(ctx context.Context, id int) (*Operator, error)
-	adminUpdateOperator       func(ctx context.Context, id int, email, role string, municipality *string, password string) error
+	adminUpdateOperator       func(ctx context.Context, id int, email, name, role string, municipality *string, password string) error
 
 	adminListUsers            func(ctx context.Context, filters map[string]any) ([]User, error)
 	adminListPaginatedUsers   func(ctx context.Context, filters map[string]any, page, pageSize int) (*PaginatedUsers, error)
@@ -617,6 +617,10 @@ func main() {
 		panic(err)
 	}
 
+	if err := InitContentCache(ctx, app.db); err != nil {
+		app.log.Error("failed to initialize content cache", "err", err)
+	}
+
 	if err := os.MkdirAll(filepath.Join(cfg.DataRoot, "uploads", "reports"), 0o755); err != nil {
 		panic(err)
 	}
@@ -642,6 +646,12 @@ func main() {
 		api.GET("/reports/:public_id/status", app.reportStatusHandler)
 		api.GET("/tags", app.tagsHandler)
 		api.GET("/municipalities", app.municipalitiesHandler)
+		api.GET("/showcase", app.publicShowcaseItemsHandler)
+		api.GET("/showcase/:slot/photo", app.publicShowcasePhotoHandler)
+		api.GET("/blog", app.publicBlogListHandler)
+		api.GET("/blog/:slug", app.publicBlogPostHandler)
+		api.GET("/blog/media/:filename", app.blogMediaServeHandler)
+		api.GET("/content", handleGetDynamicContent)
 
 		auth := api.Group("/auth")
 		{

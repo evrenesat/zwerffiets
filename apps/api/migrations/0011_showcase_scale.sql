@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE showcase_items
+ADD COLUMN scale_percent INTEGER NOT NULL DEFAULT 100;
+
+COMMIT;

@@ -40,6 +40,26 @@ if (browser) {
   });
 }
 
+export const loadDynamicContent = async (): Promise<void> => {
+  if (!browser) return;
+  try {
+    const res = await fetch('/api/v1/content');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.nl) {
+        Object.assign(translations.nl, data.nl);
+      }
+      if (data.en) {
+        Object.assign(translations.en, data.en);
+      }
+      // Force reactivity to re-evaluate t() calls
+      uiLanguage.update((l) => l);
+    }
+  } catch (e) {
+    console.warn('Failed to load dynamic content', e);
+  }
+};
+
 export const t = (
   language: UiLanguage,
   key: TranslationKey | string,

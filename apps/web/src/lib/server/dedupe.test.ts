@@ -9,7 +9,7 @@ describe('dedupe scoring', () => {
         tags: ['flat_tires', 'rusted']
       },
       {
-        id: 'report-2',
+        id: 2,
         location: { lat: 52.36762, lng: 4.90412, accuracy_m: 6 },
         tags: ['flat_tires'],
         createdAt: new Date().toISOString()
@@ -18,7 +18,7 @@ describe('dedupe scoring', () => {
     );
 
     expect(candidate).not.toBeNull();
-    expect(candidate?.reportId).toBe('report-2');
+    expect(candidate?.reportId).toBe(2);
     expect(candidate?.score).toBeGreaterThan(0.5);
   });
 
@@ -29,7 +29,7 @@ describe('dedupe scoring', () => {
         tags: ['flat_tires']
       },
       {
-        id: 'report-3',
+        id: 3,
         location: { lat: 52.3776, lng: 4.9141, accuracy_m: 6 },
         tags: ['flat_tires'],
         createdAt: new Date().toISOString()

@@ -1,0 +1,245 @@
+{{define "content"}}
+<section class="card">
+  <p><a href="{{.BackURL}}">{{index .Text "report_back"}}</a></p>
+
+  <h1>{{index .Text "showcase_editor_title"}}</h1>
+
+  <div class="showcase-editor-preview" id="preview-wrapper" style="display: {{if .PhotoURL}}block{{else}}none{{end}}">
+    <div style="margin-bottom: 2rem;">
+      <div class="photo-pan-container" id="pan-container" style="position: relative; width: 100%; max-width: 400px; aspect-ratio: 1/1; overflow: hidden; border: 2px solid var(--border-color); cursor: crosshair; touch-action: none; background: var(--bg-alt);">
+        <img id="pan-image" src="{{.PhotoURL}}" alt="Mask preview" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; pointer-events: none; transform-origin: 50% 50%; transform: scale(1);" />
+      </div>
+      <p class="muted" style="margin-top: 0.5rem;">Click and drag to set the focal point.</p>
+    </div>
+  </div>
+
+  <form method="post" action="/bikeadmin/showcase/editor" class="stack-form">
+    <input type="hidden" name="next" value="{{.BackURL}}" />
+    <input type="hidden" name="photo_id" value="{{.PhotoID}}" />
+    <input type="hidden" name="focal_x" id="focal_x" value="50" />
+    <input type="hidden" name="focal_y" id="focal_y" value="50" />
+    
+    <div style="display: none;" id="showcase-json-data">{{.ShowcaseJSON}}</div>
+
+    <label for="slot">{{index .Text "showcase_slot"}}</label>
+    <select id="slot" name="slot" required>
+      <option value="">{{index .Text "bulk_choose_action"}}</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+
+    <label for="subtitle">{{index .Text "showcase_subtitle"}}</label>
+    <input type="text" id="subtitle" name="subtitle" required />
+
+    <label for="scale_percent">{{index .Text "showcase_scale"}} (%)</label>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <input type="range" id="scale_percent" name="scale_percent" min="50" max="300" value="100" style="flex-grow: 1;" />
+      <span id="scale_display" style="min-width: 3rem; text-align: right;">100%</span>
+    </div>
+
+    <button type="submit">{{index .Text "showcase_save"}}</button>
+  </form>
+
+  <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);" />
+
+  <h2>Current Showcase Items</h2>
+  <div class="photo-grid">
+    {{range $item := .ShowcaseItems}}
+    <div class="showcase-slot-card" style="border: 1px solid var(--border-color); padding: 1rem; border-radius: var(--radius-md); cursor: pointer;" onclick="document.getElementById('slot').value = '{{$item.Slot}}'; document.getElementById('slot').dispatchEvent(new Event('change')); window.scrollTo(0,0);">
+      <h3>Slot {{$item.Slot}}</h3>
+      {{if $item.StoragePath}}
+      <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; background: var(--bg-alt); margin-bottom: 0.5rem;">
+        <img src="/api/v1/showcase/{{$item.Slot}}/photo" alt="Slot {{$item.Slot}}" style="width: 100%; height: 100%; object-fit: cover; object-position: {{$item.FocalX}}% {{$item.FocalY}}%; transform: scale({{$item.ScalePercent}}%);" />
+      </div>
+      <p><strong>{{$item.Subtitle}}</strong></p>
+      <p class="muted">Focal: {{$item.FocalX}}%, {{$item.FocalY}}% (Zoom: {{$item.ScalePercent}}%)</p>
+      {{else}}
+      <div style="width: 100%; aspect-ratio: 1/1; background: var(--bg-alt); display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; border: 1px dashed var(--border-color);">
+        <span class="muted">Empty</span>
+      </div>
+      {{end}}
+    </div>
+    {{end}}
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('pan-container');
+    const image = document.getElementById('pan-image');
+    const inputX = document.getElementById('focal_x');
+    const inputY = document.getElementById('focal_y');
+    const scaleInput = document.getElementById('scale_percent');
+    const scaleDisplay = document.getElementById('scale_display');
+    const slotSelect = document.getElementById('slot');
+    const subtitleInput = document.getElementById('subtitle');
+    const hiddenPhotoId = document.getElementsByName('photo_id')[0];
+    const jsonDataEl = document.getElementById('showcase-json-data');
+    
+    let showcaseItems = [];
+    if (jsonDataEl && jsonDataEl.textContent) {
+        try { showcaseItems = JSON.parse(jsonDataEl.textContent); }
+        catch(e) { console.error("Could not parse showcase JSON", e); }
+    }
+
+    const initialPhotoId = parseInt('{{.PhotoID}}') || 0;
+
+    if (slotSelect) {
+        slotSelect.addEventListener('change', (e) => {
+            const slot = parseInt(e.target.value);
+            if (!slot) return;
+            
+            const item = showcaseItems.find(i => i.Slot === slot);
+            if (item) {
+                if (initialPhotoId > 0) {
+                    // Adding a new photo workflow: keep visual but optionally reuse subtitle
+                    subtitleInput.value = item.Subtitle;
+                } else {
+                    // Editing an existing slot workflow from Nav:
+                    if (item.ReportPhotoID && item.ReportPhotoID > 0) {
+                        subtitleInput.value = item.Subtitle;
+                        inputX.value = item.FocalX || 50;
+                        inputY.value = item.FocalY || 50;
+                        if (scaleInput) {
+                            scaleInput.value = item.ScalePercent || 100;
+                            if (scaleDisplay) scaleDisplay.textContent = scaleInput.value + '%';
+                        }
+                        hiddenPhotoId.value = item.ReportPhotoID;
+                        if (image) {
+                            image.src = '/api/v1/showcase/' + item.Slot + '/photo';
+                            image.style.objectPosition = `${inputX.value}% ${inputY.value}%`;
+                            image.style.transformOrigin = `${inputX.value}% ${inputY.value}%`;
+                            image.style.transform = `scale(${scaleInput ? scaleInput.value / 100 : 1})`;
+                        }
+                        const wrapper = document.getElementById('preview-wrapper');
+                        if (wrapper) wrapper.style.display = 'block';
+                    } else {
+                        // It's empty 
+                        subtitleInput.value = '';
+                        inputX.value = 50;
+                        inputY.value = 50;
+                        if (scaleInput) {
+                            scaleInput.value = 100;
+                            if (scaleDisplay) scaleDisplay.textContent = '100%';
+                        }
+                        hiddenPhotoId.value = '';
+                        const wrapper = document.getElementById('preview-wrapper');
+                        if (wrapper) wrapper.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
+
+    if (!container || !image || !inputX || !inputY) return;
+
+    if (scaleInput) {
+        scaleInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (scaleDisplay) scaleDisplay.textContent = val + "%";
+            image.style.transform = `scale(${val / 100})`;
+        });
+    }
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+
+    function getPointerPos(e) {
+        if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    }
+
+    function startDrag(e) {
+        isDragging = true;
+        const pos = getPointerPos(e);
+        startX = pos.x;
+        startY = pos.y;
+    }
+
+    function moveDrag(e) {
+        if (!isDragging) return;
+        const pos = getPointerPos(e);
+        const rect = container.getBoundingClientRect();
+        
+        const deltaX = pos.x - startX;
+        const deltaY = pos.y - startY;
+        
+        startX = pos.x;
+        startY = pos.y;
+
+        const scale = (parseFloat(scaleInput ? scaleInput.value : 100)) / 100;
+
+        let w_c = rect.width;
+        let h_c = rect.height;
+        let naturalW = image.naturalWidth || w_c;
+        let naturalH = image.naturalHeight || h_c;
+        
+        let imgAspect = naturalW / naturalH;
+        let containerAspect = w_c / h_c;
+        
+        let w_i = w_c;
+        let h_i = h_c;
+        if (imgAspect > containerAspect) {
+            h_i = h_c;
+            w_i = h_c * imgAspect;
+        } else {
+            w_i = w_c;
+            h_i = w_c / imgAspect;
+        }
+
+        let denomX = w_c - w_i * scale;
+        let denomY = h_c - h_i * scale;
+
+        let dp_x = 0;
+        if (Math.abs(denomX) > 0.1) {
+            dp_x = deltaX / denomX * 100;
+        }
+        let dp_y = 0;
+        if (Math.abs(denomY) > 0.1) {
+            // Correct mapping for inverse Y
+            dp_y = deltaY / denomY * 100;
+        }
+
+        let currentX = parseFloat(inputX.value) || 50;
+        let currentY = parseFloat(inputY.value) || 50;
+        
+        // Reversed panning: moving mouse right (deltaX>0) -> image moves right -> focal point tracks left (smaller focal x)
+        // Moving mouse down (deltaY>0) -> image moves down -> focal point tracks up (smaller focal y)
+        // Except! Wait. denomX and denomY are negative because w_c < w_i * scale.
+        // So deltaX/denomX is actually decreasing dynamically already! Let's just confirm it maps exactly backwards!
+        // We already did X backwards. Let's do Y backwards too.
+        let newX = currentX + dp_x;
+        let newY = currentY + dp_y;
+
+        newX = Math.round(Math.max(0, Math.min(newX, 100)));
+        newY = Math.round(Math.max(0, Math.min(newY, 100)));
+
+        inputX.value = newX;
+        inputY.value = newY;
+        
+        image.style.objectPosition = `${newX}% ${newY}%`;
+        image.style.transformOrigin = `${newX}% ${newY}%`;
+    }
+
+    container.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    container.addEventListener('touchstart', (e) => {
+        startDrag(e);
+        e.preventDefault();
+    }, {passive: false});
+
+    window.addEventListener('touchmove', (e) => {
+        moveDrag(e);
+    }, {passive: false});
+
+    window.addEventListener('touchend', () => { isDragging = false; });
+});
+</script>
+{{end}}

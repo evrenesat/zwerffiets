@@ -1,0 +1,47 @@
+{{define "content"}}
+<section class="card">
+  <div class="header-split">
+    <h1>{{index .Text "page_title_blog"}}</h1>
+    <a href="/bikeadmin/blog/new" class="button">{{index .Text "blog_create_button"}}</a>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{{index .Text "blog_col_title"}}</th>
+          <th>{{index .Text "blog_col_author"}}</th>
+          <th>{{index .Text "blog_col_status"}}</th>
+          <th>{{index .Text "blog_col_published_at"}}</th>
+          <th>{{index .Text "col_actions"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Posts}}
+        <tr>
+          <td><strong>{{.Title}}</strong><br/><small>/blog/{{.Slug}}</small></td>
+          <td>{{.AuthorName}}</td>
+          <td>
+            {{if .IsPublished}}
+            <span class="signal-badge signal-strong">{{index $.Text "status_published"}}</span>
+            {{else}}
+            <span class="signal-badge signal-none">{{index $.Text "status_draft"}}</span>
+            {{end}}
+          </td>
+          <td>{{if .PublishedAt}}{{.PublishedAt.Format "2006-01-02 15:04"}}{{else}}-{{end}}</td>
+          <td>
+            <a href="/bikeadmin/blog/{{.ID}}" class="link-button">{{index $.Text "report_edit_button"}}</a>
+          </td>
+        </tr>
+        {{else}}
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 2rem;">
+            {{index .Text "triage_empty"}}
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
+</section>
+{{end}}

@@ -45,6 +45,9 @@
       {{if eq .Session.Role "admin"}}
       <a href="/bikeadmin/operators" class="{{if eq .ActiveNav "operators"}}active{{end}}">{{index .Text "nav_operators"}}</a>
       <a href="/bikeadmin/users" class="{{if eq .ActiveNav "users"}}active{{end}}">{{index .Text "nav_users"}}</a>
+      <a href="/bikeadmin/showcase/editor" class="{{if eq .ActiveNav "showcase"}}active{{end}}">{{index .Text "nav_showcase"}}</a>
+      <a href="/bikeadmin/blog" class="{{if eq .ActiveNav "blog"}}active{{end}}">{{index .Text "nav_blog"}}</a>
+      <a href="/bikeadmin/content" class="{{if eq .ActiveNav "content"}}active{{end}}">{{index .Text "nav_content"}}</a>
       {{end}}
       <a href="/bikeadmin/exports" class="{{if eq .ActiveNav "exports"}}active{{end}}">{{index .Text "nav_exports"}}</a>
     </nav>

@@ -55,9 +55,7 @@ interface FingerprintBucket {
 interface ReconfirmationComputation {
   summary: ReportSignalSummary;
   signalStrength: SignalStrength;
-  classificationByReportId: Record<
-    string,
-    'initial' | 'ignored_same_day' | 'counted_same_reporter' | 'counted_distinct_reporter' | 'non_qualifying'
+  classificationByReportId: Record<number, 'initial' | 'ignored_same_day' | 'counted_same_reporter' | 'counted_distinct_reporter' | 'non_qualifying'
   >;
 }
 
@@ -257,7 +255,7 @@ const selectBikeGroupForReport = async (
     (report) => report.status !== 'invalid'
   );
 
-  const bestScoreByGroup = new Map<string, number>();
+  const bestScoreByGroup = new Map<number, number>();
 
   for (const candidate of candidates) {
     const score = scoreSignalGroupCandidate(incoming, candidate, nowIso);
@@ -550,7 +548,7 @@ export const listOperatorReports = async (filters: OperatorReportFilters): Promi
 };
 
 export const updateReportStatus = async (
-  reportId: string,
+  reportId: number,
   nextStatus: ReportStatus,
   session: OperatorSession
 ): Promise<Report> => {
@@ -573,8 +571,8 @@ export const updateReportStatus = async (
 };
 
 export const mergeDuplicateReports = async (
-  canonicalReportId: string,
-  duplicateReportIds: string[],
+  canonicalReportId: number,
+  duplicateReportIds: number[],
   session: OperatorSession
 ) => {
   mergeReportsSchema.parse({
@@ -632,7 +630,7 @@ export const generateExportBatch = async (
 };
 
 export const getExportAsset = async (
-  exportId: string,
+  exportId: number,
   format: 'csv' | 'geojson' | 'pdf'
 ): Promise<{ contentType: string; body: string | Uint8Array; fileName: string }> => {
   const repository = getRepository();
@@ -665,12 +663,12 @@ export const getExportAsset = async (
   };
 };
 
-export const listReportEvents = async (reportId: string) => {
+export const listReportEvents = async (reportId: number) => {
   const repository = getRepository();
   return repository.listEvents(reportId);
 };
 
-export const getReportDetails = async (reportId: string): Promise<{
+export const getReportDetails = async (reportId: number): Promise<{
   report: Report;
   events: Awaited<ReturnType<typeof listReportEvents>>;
   signal_details: SignalDetails;
