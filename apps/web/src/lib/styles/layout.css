@@ -65,6 +65,21 @@ body {
   white-space: nowrap;
 }
 
+.topbar-nav .topbar-link-blog {
+  color: var(--primary); /* Actually I'll override this with inline bright green if needed, but var(--primary) #4a7c59 might be what the user meant */
+  color: #1a7a27;
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-right: 0.25rem;
+  transition: color 120ms ease;
+  white-space: nowrap;
+}
+
+.topbar-nav .topbar-link-blog:hover {
+  color: #11571a;
+}
+
 .topbar-nav a:hover {
   color: var(--fg);
 }

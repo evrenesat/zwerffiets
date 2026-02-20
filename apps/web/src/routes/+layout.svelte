@@ -107,6 +107,8 @@
     </a>
     <nav class="topbar-nav">
       {#if $navVariant === "landing"}
+        <a class="topbar-link-blog" href="/blog">{t($uiLanguage, "nav_blog")}</a
+        >
         <a class="topbar-link-landing" href="#probleem"
           >{t($uiLanguage, "nav_problem")}</a
         >
@@ -115,9 +117,12 @@
         >
         <a class="nav-cta" href="/report">{t($uiLanguage, "nav_report")}</a>
       {:else if $navVariant === "report"}
+        <a class="topbar-link-blog" href="/blog">{t($uiLanguage, "nav_blog")}</a
+        >
         <a href="/my-reports">{t($uiLanguage, "nav_my_reports")}</a>
       {:else}
-        <a href="/blog">{t($uiLanguage, "nav_blog")}</a>
+        <a class="topbar-link-blog" href="/blog">{t($uiLanguage, "nav_blog")}</a
+        >
         <a href="/report">{t($uiLanguage, "nav_report")}</a>
         <a href="/my-reports">{t($uiLanguage, "nav_my_reports")}</a>
       {/if}
@@ -139,6 +144,7 @@
     <div class="footer-inner">
       <p>ZwerfFiets – {t($uiLanguage, "footer_tagline")}</p>
       <nav class="footer-nav">
+        <a href="/blog">{t($uiLanguage, "nav_blog")}</a>
         <a href="/privacy">{t($uiLanguage, "footer_privacy")}</a>
         <a href="/about">{t($uiLanguage, "footer_about")}</a>
         <a href="https://github.com/zwerffiets/zwerffiets">GitHub</a>
